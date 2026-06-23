@@ -148,6 +148,53 @@ def compute_iou(logits, target):
         self.assertEqual(stats["public_defs"], 2)
         self.assertEqual(stats["thin_docstrings"], 1)
 
+    def test_python_analysis_flags_long_docstrings(self) -> None:
+        module = load_module()
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "dataset.py"
+            path.write_text(
+                '''
+"""Dataset module.
+
+Line 2.
+Line 3.
+Line 4.
+Line 5.
+Line 6.
+Line 7.
+Line 8.
+Line 9.
+"""
+
+
+def load_batch(path):
+    """Load a batch from disk.
+
+    Line 2.
+    Line 3.
+    Line 4.
+    Line 5.
+    Line 6.
+    Line 7.
+    Line 8.
+    Line 9.
+    Line 10.
+    Line 11.
+    Line 12.
+    Line 13.
+    Line 14.
+    Line 15.
+    """
+    return path
+''',
+                encoding="utf-8",
+            )
+
+            stats = module.analyze_python_file(path)
+
+        self.assertEqual(stats["long_module_docstrings"], 1)
+        self.assertEqual(stats["long_public_docstrings"], 1)
+
     def test_python_analysis_flags_public_api_naming(self) -> None:
         module = load_module()
         with tempfile.TemporaryDirectory() as tmp:

@@ -55,11 +55,13 @@ Keep side effects explicit: filesystem writes, downloads, CUDA initialization, l
 
 ## Docstrings
 
-Use docstrings for public modules, classes, and functions. Private one-line helpers can remain undocumented when their names are clear.
+Use concise docstrings for public modules, classes, and functions. Private one-line helpers can remain undocumented when their names are clear.
 
 Read `docstring-standard.md` before doing a docstring pass. It defines module-level docstrings, thin/stale docstring detection, and domain-specific contracts for datasets, models, losses, metrics, training, evaluation, inference, configs, and checkpoints.
 
 Every public Python module should start with a file-level docstring that states what the file owns. For scripts, the top docstring should also name the CLI behavior and side effects. Avoid vague summaries such as `"""Utilities."""`; state the task, data contract, and important side effects when known.
+
+Keep module and function docstrings short. Prefer a one-line summary plus compact tensor/config details. Move tutorials, long examples, derivations, and background text to README or docs.
 
 For deep learning code, useful docstrings include:
 

@@ -150,6 +150,8 @@ DL_CONTRACT_WORDS = {
     "shape",
     "tensor",
 }
+MAX_MODULE_DOCSTRING_LINES = 8
+MAX_PUBLIC_DOCSTRING_LINES = 14
 
 
 def exists_any(root: Path, paths: list[str]) -> list[str]:
@@ -319,6 +321,11 @@ def first_docstring_line(docstring: str) -> str:
     return ""
 
 
+def docstring_line_count(docstring: str) -> int:
+    """Return the number of non-empty lines in a cleaned docstring."""
+    return sum(1 for line in docstring.splitlines() if line.strip())
+
+
 def is_thin_docstring(name: str, docstring: str, has_signature_detail: bool) -> bool:
     """Return whether a public docstring looks too vague to be useful."""
     first_line = normalize_identifier(first_docstring_line(docstring))
@@ -372,9 +379,11 @@ def analyze_python_file(path: Path) -> dict[str, int]:
             "syntax_errors": 1,
             "module_docstring_expected": 0,
             "missing_module_docstring": 0,
+            "long_module_docstrings": 0,
             "public_defs": 0,
             "missing_docstrings": 0,
             "thin_docstrings": 0,
+            "long_public_docstrings": 0,
             "typed_defs": 0,
             "vague_names": 0,
             "bad_function_names": 0,
@@ -385,11 +394,17 @@ def analyze_python_file(path: Path) -> dict[str, int]:
         }
 
     module_docstring_expected = int(should_expect_module_docstring(path))
-    missing_module_docstring = int(module_docstring_expected and not ast.get_docstring(tree))
+    module_docstring = ast.get_docstring(tree)
+    missing_module_docstring = int(module_docstring_expected and not module_docstring)
+    long_module_docstrings = int(
+        bool(module_docstring)
+        and docstring_line_count(module_docstring) > MAX_MODULE_DOCSTRING_LINES
+    )
     count_public_api = not is_test_file(path)
     public_defs = 0
     missing_docstrings = 0
     thin_docstrings = 0
+    long_public_docstrings = 0
     typed_defs = 0
     vague_names = 0
     bad_function_names = 0
@@ -435,6 +450,8 @@ def analyze_python_file(path: Path) -> dict[str, int]:
             )
             if is_thin_docstring(node.name, docstring, has_signature_detail):
                 thin_docstrings += 1
+            if docstring_line_count(docstring) > MAX_PUBLIC_DOCSTRING_LINES:
+                long_public_docstrings += 1
         if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
             has_return = node.returns is not None
             has_arg_hints = all(
@@ -473,9 +490,11 @@ def analyze_python_file(path: Path) -> dict[str, int]:
         "syntax_errors": 0,
         "module_docstring_expected": module_docstring_expected,
         "missing_module_docstring": missing_module_docstring,
+        "long_module_docstrings": long_module_docstrings,
         "public_defs": public_defs,
         "missing_docstrings": missing_docstrings,
         "thin_docstrings": thin_docstrings,
+        "long_public_docstrings": long_public_docstrings,
         "typed_defs": typed_defs,
         "vague_names": vague_names,
         "bad_function_names": bad_function_names,
@@ -542,9 +561,11 @@ def audit(root: Path) -> int:
         "syntax_errors": 0,
         "module_docstring_expected": 0,
         "missing_module_docstring": 0,
+        "long_module_docstrings": 0,
         "public_defs": 0,
         "missing_docstrings": 0,
         "thin_docstrings": 0,
+        "long_public_docstrings": 0,
         "typed_defs": 0,
         "vague_names": 0,
         "bad_function_names": 0,
@@ -571,6 +592,7 @@ def audit(root: Path) -> int:
     thin_docstring_ratio = (
         py_stats["thin_docstrings"] / py_stats["public_defs"] if py_stats["public_defs"] else 0.0
     )
+    long_docstring_hits = py_stats["long_module_docstrings"] + py_stats["long_public_docstrings"]
     path_name_stats = analyze_path_names(root)
     naming_hits = (
         path_name_stats["bad_dir_names"]
@@ -612,6 +634,7 @@ def audit(root: Path) -> int:
         ("module docstrings", module_docstring_ratio >= 0.8),
         ("public API docstrings", docstring_ratio >= 0.5),
         ("limited thin docstrings", thin_docstring_ratio <= 0.2),
+        ("concise docstrings", long_docstring_hits == 0),
         (
             "directory and file naming",
             path_name_stats["bad_dir_names"] == 0
@@ -668,9 +691,11 @@ def audit(root: Path) -> int:
     print(f"- Python files: {len(python_files)}")
     print(f"- modules expected to have docstrings: {py_stats['module_docstring_expected']}")
     print(f"- modules missing docstrings: {py_stats['missing_module_docstring']}")
+    print(f"- long module docstrings: {py_stats['long_module_docstrings']}")
     print(f"- public definitions: {py_stats['public_defs']}")
     print(f"- public definitions missing docstrings: {py_stats['missing_docstrings']}")
     print(f"- thin public docstrings: {py_stats['thin_docstrings']}")
+    print(f"- long public docstrings: {py_stats['long_public_docstrings']}")
     print(f"- typed public functions/classes: {py_stats['typed_defs']}")
     print(f"- directories with nonstandard names: {path_name_stats['bad_dir_names']}")
     print(f"- Python files with non-snake-case names: {path_name_stats['bad_python_file_names']}")

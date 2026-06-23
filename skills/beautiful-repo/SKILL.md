@@ -30,6 +30,7 @@ Use these modes:
 - README mode: improve the visual GitHub README, images, badges, quickstart, results, checkpoints, citation, and link hub.
 - Code style mode: improve directory/file/API naming, docstrings, function boundaries, imports, type hints, and side-effect boundaries.
 - Release mode: add or improve `CITATION.cff`, model cards, data cards, license notes, result tables, checkpoint instructions, and CI.
+- Multi-agent mode: after an audit or code review, split implementation into focused agents for naming/code style, docstrings, README/docs, tests/CI, and release metadata when the environment supports subagents.
 
 When the user asks for "everything" or "standardize the repo", cover README, docs, structure, naming, docstrings, configs, entry points, tests, CI, packaging, release metadata, artifacts, and compatibility. Do not stop after only README or only code style.
 
@@ -53,7 +54,25 @@ Optimize for these outcomes, in order:
 - Prefer the repository's current framework and conventions. Do not introduce Hydra, Lightning, uv, DVC, MLflow, or Weights & Biases unless the project already uses them or the user approves.
 - Keep notebooks as examples or analysis artifacts, not as the only training/evaluation path.
 - Treat style work as user-facing engineering work. Improve names, docstrings, function boundaries, type hints, README presentation, and error messages only when it improves maintainability or reproducibility.
+- Keep top-of-file module docstrings and function docstrings concise. Prefer short contract text over long explanations; move tutorials, derivations, and background to docs.
 - Do not make cosmetic edits that obscure experiment logic, historical results, or paper reproduction commands.
+
+## Review-To-Implementation Workflow
+
+After an audit or review, use a multi-agent workflow when the environment supports it and the change is large enough to benefit from parallel review:
+
+1. Produce a primary audit listing gaps and affected files.
+2. Assign focused agents or passes:
+   - Naming/code agent: directories, Python files, public APIs, module boundaries, imports, and side effects.
+   - Docstring agent: concise module/function/class docstrings with tensor/config/checkpoint contracts.
+   - README/docs agent: visual README, quickstart, data/reproduction/results docs, model/data cards.
+   - Tests/CI agent: smoke tests, import/config/model-forward checks, lint/format/CI gates.
+   - Release agent: citation, license, checkpoint tables, limitations, artifact hygiene.
+3. Keep each agent's edits scoped and compatibility-preserving.
+4. Run a final integrator pass to resolve conflicts, remove duplication, and verify that all coverage checklist areas were addressed or explicitly deferred.
+5. Finish with validation commands, compatibility notes, and remaining risks.
+
+If subagents are not available, simulate the same workflow as sequential passes with separate diffs or commits.
 
 ## First Pass
 
@@ -172,7 +191,7 @@ A normalized deep learning repo should have:
 - README sections for badges, visual project signal, installation, quickstart, reproduction, results, model/checkpoint table, citation, license, and acknowledgements.
 - README images and links point to real assets or are explicitly removed. Do not leave `href="#"`, fake checkpoint links, fake metrics, or placeholder screenshots in a finished README.
 - Directories, Python files, packages, public APIs, configs, experiments, CLI flags, and output paths follow a consistent naming convention or preserve a documented legacy convention.
-- Public modules, classes, and functions use consistent naming, type hints where practical, and docstrings that explain ownership, tensor shapes, units, devices, configs, checkpoints, and side effects.
+- Public modules, classes, and functions use consistent naming, type hints where practical, and concise docstrings that explain ownership, tensor shapes, units, devices, configs, checkpoints, and side effects.
 - Training, evaluation, and inference code avoids hidden import-time side effects, author-local absolute paths, and unstructured global state.
 - `CITATION.cff` and BibTeX for paper repositories.
 - `.gitignore` protecting large data, model weights, logs, and generated outputs.

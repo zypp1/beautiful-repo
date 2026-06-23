@@ -6,7 +6,9 @@ The policy combines PEP 257, Ruff/pydocstyle public-docstring rules, PyTorch-sty
 
 ## Core Rule
 
-Docstrings are API contracts, not decorative comments.
+Docstrings are concise API contracts, not decorative comments.
+
+Keep top-of-file module docstrings and function docstrings brief. The goal is the shortest text that accurately states the contract a caller or maintainer needs. Prefer one precise paragraph plus short `Args`/`Returns` sections over long explanations.
 
 Add or improve a docstring when it helps a reader answer one of these questions without reading the whole implementation:
 
@@ -19,6 +21,31 @@ Add or improve a docstring when it helps a reader answer one of these questions 
 - What assumptions would break reproduction if guessed incorrectly?
 
 Do not add docstrings that merely restate the name.
+
+## Brevity Rules
+
+- Start with a one-line summary under 72 characters when practical.
+- Keep module docstrings to 1-3 short paragraphs unless the file is a public CLI or complex integration boundary.
+- Keep function docstrings focused on contract: purpose, non-obvious arguments, return value, raised errors, side effects, and deep learning tensor/config details.
+- Omit `Args` entries for obvious parameters only when the project style allows it and the type/name already carries the contract.
+- Prefer exact compact notation such as ``(B, C, H, W)``, ``float32``, ``[0, 1]``, and ``output_dir`` over prose.
+- Move tutorials, long examples, derivations, paper background, and reproduction walkthroughs to README or docs.
+- Delete filler such as "This function is used to", "This module contains", "Helper for", and implementation narration.
+
+Good concise module docstring:
+
+```python
+"""Cityscapes segmentation dataset and batch collation utilities."""
+```
+
+Good concise function docstring:
+
+```python
+def compute_dice(logits: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
+    """Compute macro Dice from ``(B, K, H, W)`` logits and ``(B, H, W)`` labels."""
+```
+
+Expand only when the compact form hides important contracts such as batch dictionary keys, checkpoint compatibility, random state, file writes, or metric protocol.
 
 ## Module Docstrings
 
@@ -42,15 +69,13 @@ Avoid vague module summaries:
 """Utils."""
 ```
 
-Prefer a precise contract:
+Prefer a concise contract:
 
 ```python
-"""Dataset loading utilities for Cityscapes-style semantic segmentation.
+"""Cityscapes-style segmentation dataset utilities.
 
-The module builds train/validation datasets from a root directory containing
-``images/{split}`` and ``masks/{split}``. Image tensors are returned as
-``float32`` in ``(C, H, W)`` layout with values in ``[0, 1]``. Masks are
-``int64`` class-index tensors in ``(H, W)`` layout.
+Expects ``images/{split}`` and ``masks/{split}``. Returns image tensors as
+``float32`` ``(C, H, W)`` in ``[0, 1]`` and masks as ``int64`` ``(H, W)``.
 """
 ```
 
@@ -78,6 +103,7 @@ Do not treat an existing docstring as done. First classify it:
 - Stale: mentions parameters, return values, defaults, shapes, paths, or metrics that no longer match the code.
 - Incomplete: describes purpose but omits tensor shape/dtype/device, batch keys, config keys, side effects, or metric protocol that callers must know.
 - Overspecified: duplicates obvious implementation details while omitting the external contract.
+- Verbose: accurate but too long for the contract it describes; move background, examples, and implementation details to docs.
 
 Improve in this order:
 
@@ -86,7 +112,8 @@ Improve in this order:
 3. Add only contract information that is supported by code or documentation.
 4. Prefer exact shapes and keys over prose when they are known.
 5. State uncertainty explicitly if the code permits multiple layouts.
-6. Keep pure style/docstring edits separate from mathematical or training behavior changes.
+6. Remove filler and implementation narration.
+7. Keep pure style/docstring edits separate from mathematical or training behavior changes.
 
 Never "fix" a docstring by guessing model math, metric definitions, label encodings, dataset splits, or checkpoint compatibility. If the contract is unclear, add a TODO in the audit report or ask the user; do not invent a false guarantee.
 
@@ -221,6 +248,7 @@ Use these heuristics as review prompts, not absolute blockers. A small private h
 Avoid:
 
 - Long docstrings that paraphrase every implementation line.
+- Module or function docstrings that read like README sections.
 - Fake precision: claiming a tensor shape or metric protocol that the code does not enforce.
 - Copy-pasted parameter docs that no longer match defaults.
 - "This function..." boilerplate when the summary can start with the verb or noun directly.
@@ -235,6 +263,7 @@ Before considering docstring work complete:
 - Public modules have top-of-file docstrings.
 - Public classes/functions have docstrings unless the repository convention intentionally excludes them.
 - Existing docstrings were checked for thin/stale/incomplete content, not only presence.
+- Module and function docstrings are concise; long background or examples moved to docs.
 - Tensor contracts include shapes, dtypes, devices, value ranges, and batch keys where relevant.
 - Data, checkpoint, config, metric, and side-effect contracts are explicit.
 - Tests or call sites support any newly documented behavior.
