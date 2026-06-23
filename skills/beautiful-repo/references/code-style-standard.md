@@ -7,7 +7,7 @@ Use this reference before editing Python code internals, names, docstrings, type
 - Match the repository's existing style if it is coherent.
 - If style is absent or inconsistent, converge on PEP 8 naming/layout, PEP 257 docstring basics, Ruff for lint/format, and pytest for tests.
 - Prefer clear, small changes over mass rewrites. Keep behavior-preserving style changes separate from experiment logic changes.
-- Add types and docstrings to public APIs first: datasets, models, losses, metrics, trainers, evaluators, config loaders, and CLI entry functions.
+- Add types and docstrings to public modules and APIs first: datasets, models, losses, metrics, trainers, evaluators, config loaders, and CLI entry functions.
 - Do not change mathematical expressions, tensor layouts, default hyperparameters, or random seed behavior during pure style cleanup.
 
 ## Naming
@@ -55,6 +55,10 @@ Keep side effects explicit: filesystem writes, downloads, CUDA initialization, l
 
 Use docstrings for public modules, classes, and functions. Private one-line helpers can remain undocumented when their names are clear.
 
+Read `docstring-standard.md` before doing a docstring pass. It defines module-level docstrings, thin/stale docstring detection, and domain-specific contracts for datasets, models, losses, metrics, training, evaluation, inference, configs, and checkpoints.
+
+Every public Python module should start with a file-level docstring that states what the file owns. For scripts, the top docstring should also name the CLI behavior and side effects. Avoid vague summaries such as `"""Utilities."""`; state the task, data contract, and important side effects when known.
+
 For deep learning code, useful docstrings include:
 
 - tensor shapes and axis conventions
@@ -64,6 +68,8 @@ For deep learning code, useful docstrings include:
 - filesystem/network side effects
 - checkpoint compatibility
 - metric definitions and units
+
+Existing docstrings still need review. Improve thin docstrings that only restate the object name, use vague words such as "helper" or "process data", omit tensor/config/checkpoint contracts, or no longer match the signature, tests, configs, or README commands.
 
 Prefer Google or NumPy style consistently within a repository. Do not mix styles in one module unless the project already does.
 

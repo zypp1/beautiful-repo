@@ -102,6 +102,7 @@ The bundled README standard pushes deep learning projects toward a richer, easie
         openai.yaml
       references/
         code-style-standard.md
+        docstring-standard.md
         framework-notes.md
         high-impact-patterns.md
         migration-playbook.md
@@ -139,7 +140,7 @@ The bundled audit script can be run directly:
 python skills/beautiful-repo/scripts/audit_dl_repo.py /path/to/deep-learning-repo
 ```
 
-The script checks for common release-readiness signals such as README, license, citation metadata, configs, entry points, tests, docs, CI, and artifact ignore rules.
+The script checks for common release-readiness signals such as README, license, citation metadata, configs, entry points, tests, docs, CI, public/module docstrings, and artifact ignore rules.
 
 The output is a starting checklist, not a substitute for reading the repository.
 

@@ -36,8 +36,10 @@ class AuditDlRepoTests(unittest.TestCase):
             path = Path(tmp) / "model.py"
             path.write_text(
                 '''
+"""Model helpers for tests."""
+
 def documented(x: int) -> int:
-    """Return the input value."""
+    """Return the normalized integer label value."""
     return x
 
 
@@ -51,6 +53,7 @@ def missing_docstring(x):
 
         self.assertEqual(stats["public_defs"], 2)
         self.assertEqual(stats["missing_docstrings"], 1)
+        self.assertEqual(stats["missing_module_docstring"], 0)
         self.assertEqual(stats["syntax_errors"], 0)
 
     def test_python_analysis_ignores_nested_public_helpers(self) -> None:
@@ -59,8 +62,10 @@ def missing_docstring(x):
             path = Path(tmp) / "model.py"
             path.write_text(
                 '''
+"""Model helpers for tests."""
+
 def documented(x: int) -> int:
-    """Return the input value."""
+    """Return the normalized integer label value."""
     def nested_helper(y):
         return y
     return nested_helper(x)
@@ -72,6 +77,76 @@ def documented(x: int) -> int:
 
         self.assertEqual(stats["public_defs"], 1)
         self.assertEqual(stats["missing_docstrings"], 0)
+
+    def test_python_analysis_counts_missing_module_docstrings(self) -> None:
+        module = load_module()
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "dataset.py"
+            path.write_text(
+                '''
+def load_batch(path):
+    """Load an image batch tensor from a manifest path."""
+    return path
+''',
+                encoding="utf-8",
+            )
+
+            stats = module.analyze_python_file(path)
+
+        self.assertEqual(stats["module_docstring_expected"], 1)
+        self.assertEqual(stats["missing_module_docstring"], 1)
+
+    def test_python_analysis_skips_test_module_docstring_requirement(self) -> None:
+        module = load_module()
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "test_model.py"
+            path.write_text(
+                '''
+def test_forward():
+    assert True
+''',
+                encoding="utf-8",
+            )
+
+            stats = module.analyze_python_file(path)
+
+        self.assertEqual(stats["module_docstring_expected"], 0)
+        self.assertEqual(stats["missing_module_docstring"], 0)
+        self.assertEqual(stats["public_defs"], 0)
+        self.assertEqual(stats["missing_docstrings"], 0)
+
+    def test_python_analysis_flags_thin_docstrings(self) -> None:
+        module = load_module()
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "metrics.py"
+            path.write_text(
+                '''
+"""Segmentation metric implementations."""
+
+def compute_dice(logits, target):
+    """Compute dice."""
+    return logits
+
+
+def compute_iou(logits, target):
+    """Compute mean IoU from segmentation logits.
+
+    Args:
+        logits: Float tensor of shape ``(B, K, H, W)``.
+        target: Integer tensor of shape ``(B, H, W)``.
+
+    Returns:
+        Scalar tensor containing mean IoU. Higher is better.
+    """
+    return logits
+''',
+                encoding="utf-8",
+            )
+
+            stats = module.analyze_python_file(path)
+
+        self.assertEqual(stats["public_defs"], 2)
+        self.assertEqual(stats["thin_docstrings"], 1)
 
     def test_early_quickstart_requires_heading(self) -> None:
         module = load_module()

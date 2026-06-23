@@ -95,6 +95,33 @@ ARTIFACT_DIRS = [
 VAGUE_NAMES = {"foo", "bar", "tmp", "res", "obj", "thing"}
 IMPORT_TIME_CALLS = {"train", "evaluate", "download", "load_checkpoint", "fit"}
 SKIP_DIRS = {".git", ".venv", "venv", "__pycache__", "build", "dist"}
+THIN_DOCSTRING_WORDS = {
+    "calculate",
+    "compute",
+    "data",
+    "do",
+    "handle",
+    "helper",
+    "process",
+    "run",
+    "train",
+    "util",
+    "utilities",
+    "utility",
+    "wrapper",
+}
+DL_CONTRACT_WORDS = {
+    "batch",
+    "checkpoint",
+    "config",
+    "device",
+    "dtype",
+    "logit",
+    "mask",
+    "metric",
+    "shape",
+    "tensor",
+}
 
 
 def exists_any(root: Path, paths: list[str]) -> list[str]:
@@ -169,33 +196,119 @@ def iter_python_files(root: Path) -> list[Path]:
     return sorted(files)
 
 
+def normalize_identifier(text: str) -> str:
+    """Normalize text for loose docstring/name comparisons."""
+    return re.sub(r"[^a-z0-9]+", " ", text.lower()).strip()
+
+
+def public_name_tokens(name: str) -> set[str]:
+    """Return meaningful tokens from a Python public object name."""
+    return {
+        token
+        for token in re.split(r"[^a-zA-Z0-9]+|(?<=[a-z])(?=[A-Z])", name)
+        if token and token != "_"
+    }
+
+
+def first_docstring_line(docstring: str) -> str:
+    """Return the first non-empty docstring line."""
+    for line in docstring.strip().splitlines():
+        line = line.strip()
+        if line:
+            return line
+    return ""
+
+
+def is_thin_docstring(name: str, docstring: str, has_signature_detail: bool) -> bool:
+    """Return whether a public docstring looks too vague to be useful."""
+    first_line = normalize_identifier(first_docstring_line(docstring))
+    if not first_line:
+        return True
+
+    words = first_line.split()
+    if len(words) < 5 and has_signature_detail:
+        return True
+
+    name_tokens = {token.lower() for token in public_name_tokens(name)}
+    if name_tokens and set(words).issubset(name_tokens | {"a", "an", "the", "to"}):
+        return True
+
+    if any(word in THIN_DOCSTRING_WORDS for word in words):
+        has_domain_signal = any(word in DL_CONTRACT_WORDS for word in normalize_identifier(docstring).split())
+        if not has_domain_signal and len(words) <= 8:
+            return True
+
+    placeholder_patterns = [
+        r":param\s+\w+\s*:\s*(todo|tbd|none)?\s*$",
+        r"\b(todo|tbd|fixme)\b",
+    ]
+    normalized = docstring.lower()
+    return any(re.search(pattern, normalized, flags=re.MULTILINE) for pattern in placeholder_patterns)
+
+
+def is_test_file(path: Path) -> bool:
+    """Return whether a file should be treated as test code."""
+    return path.name.startswith("test_") or any(part == "tests" for part in path.parts)
+
+
+def should_expect_module_docstring(path: Path) -> bool:
+    """Return whether a Python file should normally have a module docstring."""
+    if path.name == "__init__.py":
+        return False
+    if is_test_file(path):
+        return False
+    return True
+
+
 def analyze_python_file(path: Path) -> dict[str, int]:
     try:
         tree = ast.parse(path.read_text(encoding="utf-8", errors="ignore"))
     except SyntaxError:
         return {
             "syntax_errors": 1,
+            "module_docstring_expected": 0,
+            "missing_module_docstring": 0,
             "public_defs": 0,
             "missing_docstrings": 0,
+            "thin_docstrings": 0,
             "typed_defs": 0,
             "vague_names": 0,
             "import_time_calls": 0,
         }
 
+    module_docstring_expected = int(should_expect_module_docstring(path))
+    missing_module_docstring = int(module_docstring_expected and not ast.get_docstring(tree))
+    count_public_api = not is_test_file(path)
     public_defs = 0
     missing_docstrings = 0
+    thin_docstrings = 0
     typed_defs = 0
     vague_names = 0
     import_time_calls = 0
 
     for node in tree.body:
+        if not count_public_api:
+            break
         if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
             continue
         if node.name.startswith("_"):
             continue
         public_defs += 1
-        if not ast.get_docstring(node):
+        docstring = ast.get_docstring(node)
+        if not docstring:
             missing_docstrings += 1
+        else:
+            has_signature_detail = isinstance(node, ast.ClassDef) or bool(
+                getattr(node, "args", None) and (
+                    node.args.posonlyargs
+                    or node.args.args
+                    or node.args.kwonlyargs
+                    or node.args.vararg
+                    or node.args.kwarg
+                )
+            )
+            if is_thin_docstring(node.name, docstring, has_signature_detail):
+                thin_docstrings += 1
         if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
             has_return = node.returns is not None
             has_arg_hints = all(
@@ -206,9 +319,10 @@ def analyze_python_file(path: Path) -> dict[str, int]:
             if has_return or has_arg_hints:
                 typed_defs += 1
 
-    for node in ast.walk(tree):
-        if isinstance(node, ast.Name) and node.id in VAGUE_NAMES:
-            vague_names += 1
+    if not is_test_file(path):
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Name) and node.id in VAGUE_NAMES:
+                vague_names += 1
 
     for node in tree.body:
         if isinstance(node, ast.Expr) and isinstance(node.value, ast.Call):
@@ -224,8 +338,11 @@ def analyze_python_file(path: Path) -> dict[str, int]:
 
     return {
         "syntax_errors": 0,
+        "module_docstring_expected": module_docstring_expected,
+        "missing_module_docstring": missing_module_docstring,
         "public_defs": public_defs,
         "missing_docstrings": missing_docstrings,
+        "thin_docstrings": thin_docstrings,
         "typed_defs": typed_defs,
         "vague_names": vague_names,
         "import_time_calls": import_time_calls,
@@ -286,8 +403,11 @@ def audit(root: Path) -> int:
     python_files = iter_python_files(root)
     py_stats = {
         "syntax_errors": 0,
+        "module_docstring_expected": 0,
+        "missing_module_docstring": 0,
         "public_defs": 0,
         "missing_docstrings": 0,
+        "thin_docstrings": 0,
         "typed_defs": 0,
         "vague_names": 0,
         "import_time_calls": 0,
@@ -301,6 +421,14 @@ def audit(root: Path) -> int:
         1.0 - (py_stats["missing_docstrings"] / py_stats["public_defs"])
         if py_stats["public_defs"]
         else 1.0
+    )
+    module_docstring_ratio = (
+        1.0 - (py_stats["missing_module_docstring"] / py_stats["module_docstring_expected"])
+        if py_stats["module_docstring_expected"]
+        else 1.0
+    )
+    thin_docstring_ratio = (
+        py_stats["thin_docstrings"] / py_stats["public_defs"] if py_stats["public_defs"] else 0.0
     )
 
     checks = [
@@ -329,7 +457,9 @@ def audit(root: Path) -> int:
         ("CI", ci_present),
         ("artifact ignore rules", bool(ignored_artifacts)),
         ("Python syntax", py_stats["syntax_errors"] == 0),
+        ("module docstrings", module_docstring_ratio >= 0.8),
         ("public API docstrings", docstring_ratio >= 0.5),
+        ("limited thin docstrings", thin_docstring_ratio <= 0.2),
         ("limited vague names", py_stats["vague_names"] <= max(5, len(python_files))),
         ("limited import-time side effects", py_stats["import_time_calls"] == 0),
     ]
@@ -370,8 +500,11 @@ def audit(root: Path) -> int:
     print(f"- README result signal: {'yes' if readme_has_result_signal else 'no'}")
     print(f"- README dead placeholders: {'yes' if readme_has_dead_placeholders else 'no'}")
     print(f"- Python files: {len(python_files)}")
+    print(f"- modules expected to have docstrings: {py_stats['module_docstring_expected']}")
+    print(f"- modules missing docstrings: {py_stats['missing_module_docstring']}")
     print(f"- public definitions: {py_stats['public_defs']}")
     print(f"- public definitions missing docstrings: {py_stats['missing_docstrings']}")
+    print(f"- thin public docstrings: {py_stats['thin_docstrings']}")
     print(f"- typed public functions/classes: {py_stats['typed_defs']}")
     print(f"- vague variable-name hits: {py_stats['vague_names']}")
     print(f"- possible import-time side-effect calls: {py_stats['import_time_calls']}")

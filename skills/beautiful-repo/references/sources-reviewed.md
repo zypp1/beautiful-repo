@@ -40,6 +40,10 @@ Use these for presentation patterns: centered hero blocks, logo or output images
 
 - PEP 8: https://peps.python.org/pep-0008/
 - PEP 257: https://peps.python.org/pep-0257/
+- PyTorch docstring guidelines: https://github.com/pytorch/pytorch/wiki/Docstring-Guidelines
+- Google Python style guide docstrings: https://google.github.io/styleguide/pyguide.html#38-comments-and-docstrings
+- NumPy docstring guide: https://numpydoc.readthedocs.io/en/latest/format.html
+- Ruff pydocstyle rules: https://docs.astral.sh/ruff/rules/#pydocstyle-d
 - GitHub README docs: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-readmes
 - GitHub citation file docs: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-citation-files
 - Ruff configuration: https://docs.astral.sh/ruff/configuration/
@@ -62,8 +66,18 @@ Do not copy any single repository wholesale. Use the common patterns:
 - checkpoint and dataset tables
 - docs for setup, data, reproduction, and results
 - package-quality Python code
+- public module/class/function docstrings that document API contracts, not just names
+- tensor shapes, dtypes, devices, config keys, checkpoint compatibility, metrics, randomness, and side effects in deep learning docstrings
 - smoke tests and CI that do not require full datasets by default
 - citation, license, and contribution metadata
+
+## Docstring Pattern Notes
+
+- PEP 257 and Ruff/pydocstyle treat missing public module, class, method, and function docstrings as explicit documentation quality signals.
+- PyTorch's docstring guidance favors Google-style sections, semantic argument descriptions, examples where useful, and avoiding repetitive or misleading parameter text.
+- Hugging Face libraries emphasize consistent descriptions for repeated model/config arguments and clear examples for user-facing APIs.
+- OpenMMLab, Detectron2, MONAI, TorchVision, Lightning, timm, and nnU-Net commonly make data/model/metric contracts discoverable through module structure, class/function docstrings, config docs, and README/model-zoo tables.
+- For deep learning repositories, docstring quality depends on contract precision: tensor layout, dtype, value range, batch keys, metric protocol, checkpoint compatibility, randomness, and side effects matter more than docstring length.
 
 ## README Pattern Notes
 

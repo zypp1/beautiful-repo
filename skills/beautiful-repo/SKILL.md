@@ -45,7 +45,8 @@ Optimize for these outcomes, in order:
    - `references/high-impact-patterns.md` before claiming or applying "high-quality deep learning repository" standards.
    - `references/research-release-standard.md` for paper/research repositories.
    - `references/migration-playbook.md` before moving files or changing entry points.
-   - `references/code-style-standard.md` before editing Python code internals, names, docstrings, or module boundaries.
+   - `references/code-style-standard.md` before editing Python code internals, names, type hints, or module boundaries.
+   - `references/docstring-standard.md` before adding, auditing, or improving module/class/function docstrings.
    - `references/readme-standard.md` before writing or polishing README files.
    - `references/framework-notes.md` when framework-specific choices matter.
 
@@ -108,7 +109,7 @@ Keep large or generated paths out of git: `data/`, `datasets/`, `checkpoints/`, 
 4. Introduce stable entry points: `scripts/train.py`, `scripts/eval.py`, `scripts/infer.py`; keep wrappers around old commands when needed.
 5. Centralize configuration: move hard-coded hyperparameters and paths into `configs/` only after entry points are stable.
 6. Modularize code: separate data, models, losses, metrics, training loop, evaluation, inference, and utilities.
-7. Normalize code style: apply project-local formatting, add docstrings to public APIs, improve vague names, split oversized functions, and convert import-time side effects into explicit calls.
+7. Normalize code style: apply project-local formatting, add or improve public module/class/function docstrings, improve vague names, split oversized functions, and convert import-time side effects into explicit calls.
 8. Add tests: start with import, config load, model forward, metric sanity, and dataset smoke tests using tiny synthetic data where possible.
 9. Polish README and docs: make the repository useful within the first screen, then add full reproduction and result details.
 10. Add CI: run lint, format check, tests, and import checks. Avoid GPU-only CI unless the repository already has GPU runners.
@@ -127,7 +128,7 @@ A normalized deep learning repo should have:
 - Tests that prove imports, config loading, model construction, one forward pass, and at least one metric path.
 - README sections for badges, visual project signal, installation, quickstart, reproduction, results, model/checkpoint table, citation, license, and acknowledgements.
 - README images and links point to real assets or are explicitly removed. Do not leave `href="#"`, fake checkpoint links, fake metrics, or placeholder screenshots in a finished README.
-- Public modules, classes, and functions use consistent naming, type hints where practical, and docstrings that explain shapes, units, devices, and side effects.
+- Public modules, classes, and functions use consistent naming, type hints where practical, and docstrings that explain ownership, tensor shapes, units, devices, configs, checkpoints, and side effects.
 - Training, evaluation, and inference code avoids hidden import-time side effects, author-local absolute paths, and unstructured global state.
 - `CITATION.cff` and BibTeX for paper repositories.
 - `.gitignore` protecting large data, model weights, logs, and generated outputs.
