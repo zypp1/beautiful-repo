@@ -1,0 +1,4 @@
+interface:
+  display_name: "DeepRepo Forge"
+  short_description: "Standardize deep learning research repositories for reproducibility and citation readiness."
+  default_prompt: "Use $deeprepo-forge to audit and forge this deep learning repository into a reproducible, citation-ready research release."

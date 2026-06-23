@@ -1,6 +1,6 @@
-# Standardize DL Repo
+# DeepRepo Forge
 
-Codex skill for standardizing deep learning and machine learning research repositories into reproducible, citation-ready, maintainable project structures.
+Codex skill for forging deep learning and machine learning research repositories into reproducible, citation-ready, visually polished open-source releases.
 
 Use it when you want an agent to audit or refactor PyTorch, TensorFlow, JAX, Lightning, Hugging Face, MONAI, or custom training repositories for:
 
@@ -19,13 +19,13 @@ Use it when you want an agent to audit or refactor PyTorch, TensorFlow, JAX, Lig
 Install the skill from this repository:
 
 ```bash
-npx skills add <owner>/<repo> --skill standardize-dl-repo
+npx skills add <owner>/<repo> --skill deeprepo-forge
 ```
 
 Or install from a local checkout by copying the skill folder into your Codex skills directory:
 
 ```text
-skills/standardize-dl-repo -> ~/.codex/skills/standardize-dl-repo
+skills/deeprepo-forge -> ~/.codex/skills/deeprepo-forge
 ```
 
 Restart Codex after installation.
@@ -35,13 +35,13 @@ Restart Codex after installation.
 Ask Codex:
 
 ```text
-Use $standardize-dl-repo to audit this deep learning repository and propose a migration plan.
+Use $deeprepo-forge to audit this deep learning repository and propose a migration plan.
 ```
 
 For an implementation pass:
 
 ```text
-Use $standardize-dl-repo to normalize this PyTorch repository. Keep old training commands compatible, add missing docs/tests/configs, and validate with smoke checks.
+Use $deeprepo-forge to normalize this PyTorch repository. Keep old training commands compatible, add missing docs/tests/configs, polish the visual README, and validate with smoke checks.
 ```
 
 ## Repository Layout
@@ -49,7 +49,7 @@ Use $standardize-dl-repo to normalize this PyTorch repository. Keep old training
 ```text
 .
   skills/
-    standardize-dl-repo/
+    deeprepo-forge/
       SKILL.md
       agents/
         openai.yaml
@@ -81,14 +81,14 @@ It is most useful for research repositories where the expected output is not jus
 
 The standards were distilled from a representative sample of high-impact deep learning repositories and official project hygiene references, including Transformers, Diffusers, MMDetection, Detectron2, Segment Anything, timm, Ultralytics, nnU-Net, MONAI, PyTorch Lightning, TorchVision, CLIP, PEP 8, PEP 257, GitHub README/CITATION guidance, Ruff, pytest, and Python packaging guidance.
 
-The full source list is in `skills/standardize-dl-repo/references/sources-reviewed.md`.
+The full source list is in `skills/deeprepo-forge/references/sources-reviewed.md`.
 
 ## Audit Script
 
 The bundled audit script can be run directly:
 
 ```bash
-python skills/standardize-dl-repo/scripts/audit_dl_repo.py /path/to/deep-learning-repo
+python skills/deeprepo-forge/scripts/audit_dl_repo.py /path/to/deep-learning-repo
 ```
 
 The script checks for common release-readiness signals such as README, license, citation metadata, configs, entry points, tests, docs, CI, and artifact ignore rules.

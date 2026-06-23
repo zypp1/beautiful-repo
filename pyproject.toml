@@ -1,7 +1,7 @@
 [project]
-name = "standardize-dl-repo-skill"
+name = "deeprepo-forge-skill"
 version = "0.1.0"
-description = "Codex skill for standardizing deep learning research repositories."
+description = "Codex skill for forging deep learning research repositories into reproducible, citation-ready releases."
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }

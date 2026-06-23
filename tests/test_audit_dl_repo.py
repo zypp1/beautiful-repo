@@ -7,7 +7,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SCRIPT = ROOT / "skills" / "standardize-dl-repo" / "scripts" / "audit_dl_repo.py"
+SCRIPT = ROOT / "skills" / "deeprepo-forge" / "scripts" / "audit_dl_repo.py"
 
 
 def load_module():
