@@ -1,11 +1,11 @@
 ---
 name: standardize-dl-repo
-description: Standardize deep learning and machine learning research repositories into reproducible, citation-ready, maintainable project structures. Use when auditing or refactoring PyTorch, TensorFlow, JAX, Lightning, Hugging Face, MONAI, or custom training repositories for project layout, experiment configuration, training/evaluation/inference entry points, packaging, tests, documentation, model cards, data cards, CITATION.cff, CI quality gates, and open-source research release readiness.
+description: Standardize deep learning and machine learning research repositories into reproducible, citation-ready, maintainable project structures and polished open-source releases. Use when auditing or refactoring PyTorch, TensorFlow, JAX, Lightning, Hugging Face, MONAI, or custom training repositories for project layout, experiment configuration, training/evaluation/inference entry points, Python code style, docstrings, naming, module boundaries, packaging, tests, documentation, beautiful README design, model cards, data cards, CITATION.cff, CI quality gates, and open-source research release readiness.
 ---
 
 # Standardize DL Repo
 
-Use this skill to turn a deep learning repository into a reproducible research artifact without breaking existing experiments.
+Use this skill to turn a deep learning repository into a reproducible, readable, citation-ready research artifact without breaking existing experiments.
 
 ## Operating Rules
 
@@ -15,6 +15,8 @@ Use this skill to turn a deep learning repository into a reproducible research a
 - Separate mechanical cleanup from behavioral changes. Keep formatting, layout migration, dependency changes, and training logic changes independently reviewable.
 - Prefer the repository's current framework and conventions. Do not introduce Hydra, Lightning, uv, DVC, MLflow, or Weights & Biases unless the project already uses them or the user approves.
 - Keep notebooks as examples or analysis artifacts, not as the only training/evaluation path.
+- Treat style work as user-facing engineering work. Improve names, docstrings, function boundaries, type hints, README presentation, and error messages only when it improves maintainability or reproducibility.
+- Do not make cosmetic edits that obscure experiment logic, historical results, or paper reproduction commands.
 
 ## First Pass
 
@@ -27,8 +29,11 @@ Use this skill to turn a deep learning repository into a reproducible research a
    - production ML: serving, monitoring, and deployment are primary concerns.
 3. Run `scripts/audit_dl_repo.py <repo>` from this skill when Python is available. Use the output as a checklist, not as an absolute verdict.
 4. Read the relevant reference:
+   - `references/high-impact-patterns.md` before claiming or applying "high-quality deep learning repository" standards.
    - `references/research-release-standard.md` for paper/research repositories.
    - `references/migration-playbook.md` before moving files or changing entry points.
+   - `references/code-style-standard.md` before editing Python code internals, names, docstrings, or module boundaries.
+   - `references/readme-standard.md` before writing or polishing README files.
    - `references/framework-notes.md` when framework-specific choices matter.
 
 ## Target Repository Shape
@@ -73,6 +78,7 @@ repo/
     data.md
     reproduction.md
     results.md
+    model_card.md
   examples/
     quickstart.ipynb
   assets/
@@ -89,9 +95,11 @@ Keep large or generated paths out of git: `data/`, `datasets/`, `checkpoints/`, 
 4. Introduce stable entry points: `scripts/train.py`, `scripts/eval.py`, `scripts/infer.py`; keep wrappers around old commands when needed.
 5. Centralize configuration: move hard-coded hyperparameters and paths into `configs/` only after entry points are stable.
 6. Modularize code: separate data, models, losses, metrics, training loop, evaluation, inference, and utilities.
-7. Add tests: start with import, config load, model forward, metric sanity, and dataset smoke tests using tiny synthetic data where possible.
-8. Add CI: run lint, format check, tests, and import checks. Avoid GPU-only CI unless the repository already has GPU runners.
-9. Add release metadata: `CITATION.cff`, model card, data card, checkpoint download instructions, BibTeX, and reproducibility notes.
+7. Normalize code style: apply project-local formatting, add docstrings to public APIs, improve vague names, split oversized functions, and convert import-time side effects into explicit calls.
+8. Add tests: start with import, config load, model forward, metric sanity, and dataset smoke tests using tiny synthetic data where possible.
+9. Polish README and docs: make the repository useful within the first screen, then add full reproduction and result details.
+10. Add CI: run lint, format check, tests, and import checks. Avoid GPU-only CI unless the repository already has GPU runners.
+11. Add release metadata: `CITATION.cff`, model card, data card, checkpoint download instructions, BibTeX, and reproducibility notes.
 
 ## Minimum Done Criteria
 
@@ -104,7 +112,9 @@ A normalized deep learning repo should have:
 - Clear dataset acquisition/preparation instructions, including expected directory layout.
 - Clear checkpoint/weight download instructions and checksum/version notes when available.
 - Tests that prove imports, config loading, model construction, one forward pass, and at least one metric path.
-- README sections for installation, quickstart, reproduction, results, citation, license, and acknowledgements.
+- README sections for badges, visual project signal, installation, quickstart, reproduction, results, model/checkpoint table, citation, license, and acknowledgements.
+- Public modules, classes, and functions use consistent naming, type hints where practical, and docstrings that explain shapes, units, devices, and side effects.
+- Training, evaluation, and inference code avoids hidden import-time side effects, author-local absolute paths, and unstructured global state.
 - `CITATION.cff` and BibTeX for paper repositories.
 - `.gitignore` protecting large data, model weights, logs, and generated outputs.
 

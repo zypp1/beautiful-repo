@@ -6,8 +6,10 @@ Use it when you want an agent to audit or refactor PyTorch, TensorFlow, JAX, Lig
 
 - research-grade project layout
 - train/eval/infer entry points
+- Python code style, names, docstrings, and module boundaries
 - experiment configuration
 - reproducibility documentation
+- polished README design
 - smoke tests and quality gates
 - model cards, data cards, and `CITATION.cff`
 - GitHub-ready open-source release hygiene
@@ -52,11 +54,17 @@ Use $standardize-dl-repo to normalize this PyTorch repository. Keep old training
       agents/
         openai.yaml
       references/
+        code-style-standard.md
         framework-notes.md
+        high-impact-patterns.md
         migration-playbook.md
+        readme-standard.md
         research-release-standard.md
+        sources-reviewed.md
       scripts/
         audit_dl_repo.py
+  tests/
+    test_audit_dl_repo.py
   .github/
     workflows/
       validate.yml
@@ -67,6 +75,10 @@ Use $standardize-dl-repo to normalize this PyTorch repository. Keep old training
 The skill is intentionally conservative. It tells Codex to preserve existing behavior, avoid full training runs unless requested, and migrate a repository in small reviewable steps.
 
 It is most useful for research repositories where the expected output is not just clean code, but a reproducible artifact that another researcher can install, run, evaluate, and cite.
+
+The standards were distilled from a representative sample of high-impact deep learning repositories and official project hygiene references, including Transformers, Diffusers, MMDetection, Detectron2, Segment Anything, timm, Ultralytics, nnU-Net, MONAI, PyTorch Lightning, TorchVision, CLIP, PEP 8, PEP 257, GitHub README/CITATION guidance, Ruff, pytest, and Python packaging guidance.
+
+The full source list is in `skills/standardize-dl-repo/references/sources-reviewed.md`.
 
 ## Audit Script
 

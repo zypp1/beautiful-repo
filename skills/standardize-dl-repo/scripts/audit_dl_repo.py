@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import ast
 from pathlib import Path
 
 
@@ -30,6 +31,18 @@ TARGET_DIRS = [
     "examples",
 ]
 
+README_SECTIONS = [
+    "installation",
+    "quickstart",
+    "data",
+    "training",
+    "evaluation",
+    "inference",
+    "results",
+    "citation",
+    "license",
+]
+
 ENTRYPOINTS = [
     "scripts/train.py",
     "scripts/eval.py",
@@ -38,6 +51,11 @@ ENTRYPOINTS = [
     "train.py",
     "eval.py",
     "infer.py",
+]
+
+CODE_QUALITY_FILES = [
+    ".pre-commit-config.yaml",
+    "ruff.toml",
 ]
 
 ARTIFACT_DIRS = [
@@ -53,6 +71,10 @@ ARTIFACT_DIRS = [
     "lightning_logs",
 ]
 
+VAGUE_NAMES = {"foo", "bar", "tmp", "res", "obj", "thing"}
+IMPORT_TIME_CALLS = {"train", "evaluate", "download", "load_checkpoint", "fit"}
+SKIP_DIRS = {".git", ".venv", "venv", "__pycache__", "build", "dist"}
+
 
 def exists_any(root: Path, paths: list[str]) -> list[str]:
     return [path for path in paths if (root / path).exists()]
@@ -67,7 +89,9 @@ def list_matches(root: Path, patterns: list[str]) -> list[Path]:
 
 def has_ci(root: Path) -> bool:
     workflow_dir = root / ".github" / "workflows"
-    return workflow_dir.exists() and any(workflow_dir.glob("*.yml")) or any(workflow_dir.glob("*.yaml")) if workflow_dir.exists() else False
+    if not workflow_dir.exists():
+        return False
+    return any(workflow_dir.glob("*.yml")) or any(workflow_dir.glob("*.yaml"))
 
 
 def read_gitignore(root: Path) -> str:
@@ -75,6 +99,83 @@ def read_gitignore(root: Path) -> str:
     if not path.exists():
         return ""
     return path.read_text(encoding="utf-8", errors="ignore")
+
+
+def read_readme(root: Path) -> str:
+    path = root / "README.md"
+    if not path.exists():
+        return ""
+    return path.read_text(encoding="utf-8", errors="ignore").lower()
+
+
+def iter_python_files(root: Path) -> list[Path]:
+    files: list[Path] = []
+    for path in root.rglob("*.py"):
+        if any(part in SKIP_DIRS for part in path.parts):
+            continue
+        files.append(path)
+    return sorted(files)
+
+
+def analyze_python_file(path: Path) -> dict[str, int]:
+    try:
+        tree = ast.parse(path.read_text(encoding="utf-8", errors="ignore"))
+    except SyntaxError:
+        return {
+            "syntax_errors": 1,
+            "public_defs": 0,
+            "missing_docstrings": 0,
+            "typed_defs": 0,
+            "vague_names": 0,
+            "import_time_calls": 0,
+        }
+
+    public_defs = 0
+    missing_docstrings = 0
+    typed_defs = 0
+    vague_names = 0
+    import_time_calls = 0
+
+    for node in ast.walk(tree):
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+            if node.name.startswith("_"):
+                continue
+            public_defs += 1
+            if not ast.get_docstring(node):
+                missing_docstrings += 1
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                has_return = node.returns is not None
+                has_arg_hints = all(
+                    arg.annotation is not None
+                    for arg in [*node.args.posonlyargs, *node.args.args, *node.args.kwonlyargs]
+                    if arg.arg not in {"self", "cls"}
+                )
+                if has_return or has_arg_hints:
+                    typed_defs += 1
+
+        if isinstance(node, ast.Name) and node.id in VAGUE_NAMES:
+            vague_names += 1
+
+    for node in tree.body:
+        if isinstance(node, ast.Expr) and isinstance(node.value, ast.Call):
+            func = node.value.func
+            name = func.id if isinstance(func, ast.Name) else getattr(func, "attr", "")
+            if name in IMPORT_TIME_CALLS:
+                import_time_calls += 1
+        if isinstance(node, ast.Assign) and isinstance(node.value, ast.Call):
+            func = node.value.func
+            name = func.id if isinstance(func, ast.Name) else getattr(func, "attr", "")
+            if name in IMPORT_TIME_CALLS:
+                import_time_calls += 1
+
+    return {
+        "syntax_errors": 0,
+        "public_defs": public_defs,
+        "missing_docstrings": missing_docstrings,
+        "typed_defs": typed_defs,
+        "vague_names": vague_names,
+        "import_time_calls": import_time_calls,
+    }
 
 
 def audit(root: Path) -> int:
@@ -91,17 +192,44 @@ def audit(root: Path) -> int:
     tests = list_matches(root, ["tests/test_*.py", "test_*.py", "**/test_*.py"])
     dependency_files = exists_any(root, ["requirements.txt", "environment.yml", "conda.yml", "uv.lock", "poetry.lock", "Pipfile.lock"])
     ci_present = has_ci(root)
+    code_quality_files = exists_any(root, CODE_QUALITY_FILES)
 
     gitignore = read_gitignore(root)
+    readme = read_readme(root)
     ignored_artifacts = [name for name in ARTIFACT_DIRS if name in gitignore]
     existing_artifacts = [name for name in ARTIFACT_DIRS if (root / name).exists()]
+    readme_sections = [section for section in README_SECTIONS if section in readme]
+    readme_has_visual = any(token in readme for token in ["![", "<img", ".png", ".jpg", ".jpeg", ".gif"])
+    readme_has_links = readme.count("](") >= 3 or readme.count("<a ") >= 3
+    python_files = iter_python_files(root)
+    py_stats = {
+        "syntax_errors": 0,
+        "public_defs": 0,
+        "missing_docstrings": 0,
+        "typed_defs": 0,
+        "vague_names": 0,
+        "import_time_calls": 0,
+    }
+    for path in python_files:
+        stats = analyze_python_file(path)
+        for key, value in stats.items():
+            py_stats[key] += value
+
+    docstring_ratio = (
+        1.0 - (py_stats["missing_docstrings"] / py_stats["public_defs"])
+        if py_stats["public_defs"]
+        else 1.0
+    )
 
     checks = [
         ("README", "README.md" in present_root),
+        ("README core sections", len(readme_sections) >= 5),
+        ("README visual or link hub", readme_has_visual or readme_has_links),
         ("license", "LICENSE" in present_root),
         ("citation", "CITATION.cff" in present_root),
         ("pyproject", "pyproject.toml" in present_root),
         ("dependency lock or spec", bool(dependency_files)),
+        ("code quality config", "pyproject.toml" in present_root or bool(code_quality_files)),
         ("configs directory or config files", "configs" in present_dirs or bool(config_files)),
         ("script entrypoints", bool(present_entrypoints)),
         ("src package layout", "src" in present_dirs),
@@ -109,6 +237,10 @@ def audit(root: Path) -> int:
         ("docs", "docs" in present_dirs),
         ("CI", ci_present),
         ("artifact ignore rules", bool(ignored_artifacts)),
+        ("Python syntax", py_stats["syntax_errors"] == 0),
+        ("public API docstrings", docstring_ratio >= 0.5),
+        ("limited vague names", py_stats["vague_names"] <= max(5, len(python_files))),
+        ("limited import-time side effects", py_stats["import_time_calls"] == 0),
     ]
 
     score = sum(1 for _, ok in checks if ok)
@@ -126,11 +258,19 @@ def audit(root: Path) -> int:
     print("Detected:")
     print(f"- root files: {', '.join(present_root) if present_root else 'none'}")
     print(f"- dependency files: {', '.join(dependency_files) if dependency_files else 'none'}")
+    print(f"- code quality files: {', '.join(code_quality_files) if code_quality_files else 'none'}")
     print(f"- target dirs: {', '.join(present_dirs) if present_dirs else 'none'}")
     print(f"- entrypoints: {', '.join(present_entrypoints) if present_entrypoints else 'none'}")
     print(f"- config files: {len(config_files)}")
     print(f"- tests: {len(tests)}")
     print(f"- notebooks: {len(notebooks)}")
+    print(f"- README sections: {', '.join(readme_sections) if readme_sections else 'none'}")
+    print(f"- Python files: {len(python_files)}")
+    print(f"- public definitions: {py_stats['public_defs']}")
+    print(f"- public definitions missing docstrings: {py_stats['missing_docstrings']}")
+    print(f"- typed public functions/classes: {py_stats['typed_defs']}")
+    print(f"- vague variable-name hits: {py_stats['vague_names']}")
+    print(f"- possible import-time side-effect calls: {py_stats['import_time_calls']}")
     print(f"- artifact dirs present: {', '.join(existing_artifacts) if existing_artifacts else 'none'}")
     print(f"- artifact dirs ignored: {', '.join(ignored_artifacts) if ignored_artifacts else 'none'}")
 

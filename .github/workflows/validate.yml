@@ -19,6 +19,10 @@ jobs:
           test -f skills/standardize-dl-repo/SKILL.md
           test -f skills/standardize-dl-repo/agents/openai.yaml
           test -f skills/standardize-dl-repo/scripts/audit_dl_repo.py
+          test -f skills/standardize-dl-repo/references/code-style-standard.md
+          test -f skills/standardize-dl-repo/references/high-impact-patterns.md
+          test -f skills/standardize-dl-repo/references/readme-standard.md
+          test -f skills/standardize-dl-repo/references/sources-reviewed.md
           test -f skills/standardize-dl-repo/references/research-release-standard.md
           test -f skills/standardize-dl-repo/references/migration-playbook.md
           test -f skills/standardize-dl-repo/references/framework-notes.md
@@ -37,6 +41,9 @@ jobs:
 
       - name: Compile audit script
         run: python -m py_compile skills/standardize-dl-repo/scripts/audit_dl_repo.py
+
+      - name: Run tests
+        run: python -m unittest discover -s tests
 
       - name: Run audit script on this repository
         run: python skills/standardize-dl-repo/scripts/audit_dl_repo.py . || true
