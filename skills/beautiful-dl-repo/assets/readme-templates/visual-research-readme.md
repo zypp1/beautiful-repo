@@ -2,13 +2,13 @@
   <h1>Project Name</h1>
   <p><strong>Short task/model claim in one sentence.</strong></p>
   <p>
-    <a href="#"><img src="https://img.shields.io/badge/Paper-arXiv-b31b1b" alt="Paper"></a>
-    <a href="#"><img src="https://img.shields.io/badge/Docs-online-blue" alt="Docs"></a>
-    <a href="#"><img src="https://img.shields.io/badge/License-MIT-green" alt="License"></a>
+    <a href="REPLACE_OR_REMOVE"><img src="https://img.shields.io/badge/Paper-arXiv-b31b1b" alt="Paper"></a>
+    <a href="REPLACE_OR_REMOVE"><img src="https://img.shields.io/badge/Docs-online-blue" alt="Docs"></a>
+    <a href="#license"><img src="https://img.shields.io/badge/License-MIT-green" alt="License"></a>
   </p>
   <p>
-    <a href="https://arxiv.org/abs/...">Paper</a> |
-    <a href="https://project-page.example">Project Page</a> |
+    <a href="REPLACE_OR_REMOVE">Paper</a> |
+    <a href="REPLACE_OR_REMOVE">Project Page</a> |
     <a href="#gallery">Gallery</a> |
     <a href="docs/reproduction.md">Reproduce</a> |
     <a href="#pretrained-models">Checkpoints</a> |
@@ -18,6 +18,8 @@
     <img src="assets/figures/teaser.png" alt="Representative qualitative results from Project Name" width="900">
   </p>
 </div>
+
+> Before release: replace or remove every `REPLACE_OR_REMOVE`, missing image path, fake metric, and unavailable checkpoint link.
 
 ## Snapshot
 
@@ -78,13 +80,13 @@ python scripts/infer.py \
       <strong>Base Model</strong><br>
       Dataset: Dataset name<br>
       Metric: 0.00 main metric<br>
-      <a href="#">checkpoint</a> | <a href="configs/base.yaml">config</a>
+      <a href="REPLACE_OR_REMOVE">checkpoint</a> | <a href="configs/base.yaml">config</a>
     </td>
     <td>
       <strong>Large Model</strong><br>
       Dataset: Dataset name<br>
       Metric: 0.00 main metric<br>
-      <a href="#">checkpoint</a> | <a href="configs/large.yaml">config</a>
+      <a href="REPLACE_OR_REMOVE">checkpoint</a> | <a href="configs/large.yaml">config</a>
     </td>
   </tr>
 </table>

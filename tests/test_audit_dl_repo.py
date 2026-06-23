@@ -53,6 +53,35 @@ def missing_docstring(x):
         self.assertEqual(stats["missing_docstrings"], 1)
         self.assertEqual(stats["syntax_errors"], 0)
 
+    def test_python_analysis_ignores_nested_public_helpers(self) -> None:
+        module = load_module()
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "model.py"
+            path.write_text(
+                '''
+def documented(x: int) -> int:
+    """Return the input value."""
+    def nested_helper(y):
+        return y
+    return nested_helper(x)
+''',
+                encoding="utf-8",
+            )
+
+            stats = module.analyze_python_file(path)
+
+        self.assertEqual(stats["public_defs"], 1)
+        self.assertEqual(stats["missing_docstrings"], 0)
+
+    def test_early_quickstart_requires_heading(self) -> None:
+        module = load_module()
+
+        prose_only = "This project has a quickstart coming soon.\n\n## Installation\n..."
+        heading = "# Project\n\n## Quickstart\n```bash\npython demo.py\n```\n"
+
+        self.assertFalse(module.has_early_quickstart(prose_only))
+        self.assertTrue(module.has_early_quickstart(heading))
+
     def test_audit_missing_path_returns_error_code(self) -> None:
         module = load_module()
 

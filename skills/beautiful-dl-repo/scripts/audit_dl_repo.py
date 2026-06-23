@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import ast
+import re
 from pathlib import Path
 
 
@@ -55,6 +56,12 @@ README_LINK_TARGETS = [
     "checkpoints",
     "dataset",
     "citation",
+]
+README_DEAD_PLACEHOLDERS = [
+    "replace_or_remove",
+    'href="#"',
+    "https://project-page.example",
+    "https://arxiv.org/abs/...",
 ]
 
 ENTRYPOINTS = [
@@ -122,6 +129,37 @@ def read_readme(root: Path) -> str:
     return path.read_text(encoding="utf-8", errors="ignore").lower()
 
 
+def markdown_headings(text: str) -> list[tuple[int, str, int]]:
+    """Return Markdown ATX headings as ``(level, title, start_index)`` tuples."""
+    headings: list[tuple[int, str, int]] = []
+    pattern = re.compile(r"^(#{1,6})\s+(.+?)\s*#*\s*$", re.MULTILINE)
+    for match in pattern.finditer(text):
+        raw_title = re.sub(r"<[^>]+>", "", match.group(2))
+        title = re.sub(r"\s+", " ", raw_title).strip().lower()
+        headings.append((len(match.group(1)), title, match.start()))
+    return headings
+
+
+def heading_position(headings: list[tuple[int, str, int]], keywords: list[str]) -> int | None:
+    """Return the first heading offset containing any keyword."""
+    for _, title, start in headings:
+        if any(keyword in title for keyword in keywords):
+            return start
+    return None
+
+
+def has_early_quickstart(readme: str) -> bool:
+    """Detect a real Quickstart heading near the top of a README."""
+    headings = markdown_headings(readme)
+    quickstart_pos = heading_position(headings, ["quickstart", "quick start", "getting started"])
+    if quickstart_pos is None:
+        return False
+    installation_pos = heading_position(headings, ["installation", "install", "setup"])
+    if installation_pos is None:
+        return quickstart_pos <= 4000
+    return quickstart_pos <= installation_pos + 2000
+
+
 def iter_python_files(root: Path) -> list[Path]:
     files: list[Path] = []
     for path in root.rglob("*.py"):
@@ -150,23 +188,25 @@ def analyze_python_file(path: Path) -> dict[str, int]:
     vague_names = 0
     import_time_calls = 0
 
-    for node in ast.walk(tree):
-        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
-            if node.name.startswith("_"):
-                continue
-            public_defs += 1
-            if not ast.get_docstring(node):
-                missing_docstrings += 1
-            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                has_return = node.returns is not None
-                has_arg_hints = all(
-                    arg.annotation is not None
-                    for arg in [*node.args.posonlyargs, *node.args.args, *node.args.kwonlyargs]
-                    if arg.arg not in {"self", "cls"}
-                )
-                if has_return or has_arg_hints:
-                    typed_defs += 1
+    for node in tree.body:
+        if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+            continue
+        if node.name.startswith("_"):
+            continue
+        public_defs += 1
+        if not ast.get_docstring(node):
+            missing_docstrings += 1
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            has_return = node.returns is not None
+            has_arg_hints = all(
+                arg.annotation is not None
+                for arg in [*node.args.posonlyargs, *node.args.args, *node.args.kwonlyargs]
+                if arg.arg not in {"self", "cls"}
+            )
+            if has_return or has_arg_hints:
+                typed_defs += 1
 
+    for node in ast.walk(tree):
         if isinstance(node, ast.Name) and node.id in VAGUE_NAMES:
             vague_names += 1
 
@@ -201,10 +241,23 @@ def audit(root: Path) -> int:
     present_root = exists_any(root, ROOT_FILES)
     present_dirs = exists_any(root, TARGET_DIRS)
     present_entrypoints = exists_any(root, ENTRYPOINTS)
-    config_files = list_matches(root, ["configs/**/*.yaml", "configs/**/*.yml", "configs/**/*.json", "*.yaml", "*.yml"])
+    config_files = list_matches(
+        root,
+        ["configs/**/*.yaml", "configs/**/*.yml", "configs/**/*.json", "*.yaml", "*.yml"],
+    )
     notebooks = list_matches(root, ["**/*.ipynb"])
     tests = list_matches(root, ["tests/test_*.py", "test_*.py", "**/test_*.py"])
-    dependency_files = exists_any(root, ["requirements.txt", "environment.yml", "conda.yml", "uv.lock", "poetry.lock", "Pipfile.lock"])
+    dependency_files = exists_any(
+        root,
+        [
+            "requirements.txt",
+            "environment.yml",
+            "conda.yml",
+            "uv.lock",
+            "poetry.lock",
+            "Pipfile.lock",
+        ],
+    )
     ci_present = has_ci(root)
     code_quality_files = exists_any(root, CODE_QUALITY_FILES)
 
@@ -221,13 +274,15 @@ def audit(root: Path) -> int:
     readme_has_links = readme.count("](") >= 3 or readme.count("<a ") >= 3
     readme_link_targets = [target for target in README_LINK_TARGETS if target in readme]
     readme_has_link_hub = len(readme_link_targets) >= 4
-    readme_has_checkpoint_signal = any(token in readme for token in ["checkpoint", "pretrained", "model zoo", "weights"])
-    readme_has_result_signal = any(token in readme for token in ["result", "benchmark", "metric", "miou", "map", "accuracy", "dice"])
-    quickstart_index = readme.find("quickstart")
-    installation_index = readme.find("installation")
-    readme_has_early_quickstart = quickstart_index != -1 and (
-        installation_index == -1 or quickstart_index <= installation_index + 2000
+    readme_has_checkpoint_signal = any(
+        token in readme for token in ["checkpoint", "pretrained", "model zoo", "weights"]
     )
+    readme_has_result_signal = any(
+        token in readme
+        for token in ["result", "benchmark", "metric", "miou", "map", "accuracy", "dice"]
+    )
+    readme_has_early_quickstart = has_early_quickstart(readme)
+    readme_has_dead_placeholders = any(token in readme for token in README_DEAD_PLACEHOLDERS)
     python_files = iter_python_files(root)
     py_stats = {
         "syntax_errors": 0,
@@ -260,6 +315,7 @@ def audit(root: Path) -> int:
         ("README research link hub", readme_has_link_hub),
         ("README checkpoint/model signal", readme_has_checkpoint_signal),
         ("README result signal", readme_has_result_signal),
+        ("README no dead placeholders", not readme_has_dead_placeholders),
         ("license", "LICENSE" in present_root),
         ("citation", "CITATION.cff" in present_root),
         ("pyproject", "pyproject.toml" in present_root),
@@ -293,7 +349,9 @@ def audit(root: Path) -> int:
     print("Detected:")
     print(f"- root files: {', '.join(present_root) if present_root else 'none'}")
     print(f"- dependency files: {', '.join(dependency_files) if dependency_files else 'none'}")
-    print(f"- code quality files: {', '.join(code_quality_files) if code_quality_files else 'none'}")
+    print(
+        f"- code quality files: {', '.join(code_quality_files) if code_quality_files else 'none'}"
+    )
     print(f"- target dirs: {', '.join(present_dirs) if present_dirs else 'none'}")
     print(f"- entrypoints: {', '.join(present_entrypoints) if present_entrypoints else 'none'}")
     print(f"- config files: {len(config_files)}")
@@ -306,17 +364,21 @@ def audit(root: Path) -> int:
     print(f"- README badges: {'yes' if readme_has_badges else 'no'}")
     print(f"- README gallery/examples signal: {'yes' if readme_has_gallery else 'no'}")
     print(f"- README early quickstart: {'yes' if readme_has_early_quickstart else 'no'}")
-    print(f"- README link targets: {', '.join(readme_link_targets) if readme_link_targets else 'none'}")
+    link_targets = ", ".join(readme_link_targets) if readme_link_targets else "none"
+    print(f"- README link targets: {link_targets}")
     print(f"- README checkpoint/model signal: {'yes' if readme_has_checkpoint_signal else 'no'}")
     print(f"- README result signal: {'yes' if readme_has_result_signal else 'no'}")
+    print(f"- README dead placeholders: {'yes' if readme_has_dead_placeholders else 'no'}")
     print(f"- Python files: {len(python_files)}")
     print(f"- public definitions: {py_stats['public_defs']}")
     print(f"- public definitions missing docstrings: {py_stats['missing_docstrings']}")
     print(f"- typed public functions/classes: {py_stats['typed_defs']}")
     print(f"- vague variable-name hits: {py_stats['vague_names']}")
     print(f"- possible import-time side-effect calls: {py_stats['import_time_calls']}")
-    print(f"- artifact dirs present: {', '.join(existing_artifacts) if existing_artifacts else 'none'}")
-    print(f"- artifact dirs ignored: {', '.join(ignored_artifacts) if ignored_artifacts else 'none'}")
+    artifact_dirs = ", ".join(existing_artifacts) if existing_artifacts else "none"
+    ignored_dirs = ", ".join(ignored_artifacts) if ignored_artifacts else "none"
+    print(f"- artifact dirs present: {artifact_dirs}")
+    print(f"- artifact dirs ignored: {ignored_dirs}")
 
     missing = [name for name, ok in checks if not ok]
     if missing:

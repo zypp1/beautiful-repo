@@ -67,6 +67,37 @@ For deep learning code, useful docstrings include:
 
 Prefer Google or NumPy style consistently within a repository. Do not mix styles in one module unless the project already does.
 
+### Deep Learning Docstring Contract
+
+For public data/model/loss/metric/training APIs, include the pieces that affect reproducibility:
+
+- Tensor shapes use explicit conventions such as `(batch, channels, height, width)` or `(batch, sequence, hidden)`.
+- State layout aliases once per module: `B`, `C`, `H`, `W`, `T`, `D`, `K`, and `num_classes`.
+- State dtype and value range for image tensors, masks, token IDs, logits, probabilities, and labels.
+- State device expectations when CPU/GPU placement matters.
+- For batch dictionaries, document required keys, optional keys, shapes, dtypes, and units.
+- For config inputs, document required keys, defaults, and whether unknown keys are rejected.
+- For checkpoints, document expected state dict keys, version compatibility, strict/non-strict loading, and side effects.
+- For metrics, document exact definition, averaging mode, unit, split/protocol, and whether higher is better.
+- For stochastic transforms or training utilities, document randomness, seeds, deterministic mode, and distributed assumptions.
+
+Example batch contract:
+
+```python
+def training_step(batch: dict[str, torch.Tensor], model: torch.nn.Module) -> torch.Tensor:
+    """Run one supervised training step.
+
+    Args:
+        batch: Mini-batch with keys:
+            ``image``: Float tensor of shape ``(B, 3, H, W)`` in ``[0, 1]``.
+            ``mask``: Long tensor of shape ``(B, H, W)`` with class IDs.
+        model: Segmentation model returning logits of shape ``(B, K, H, W)``.
+
+    Returns:
+        Scalar loss tensor on the same device as ``batch["image"]``.
+    """
+```
+
 Example:
 
 ```python

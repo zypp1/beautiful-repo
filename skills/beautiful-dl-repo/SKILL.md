@@ -7,6 +7,17 @@ description: Standardize deep learning and machine learning research repositorie
 
 Use this skill to turn a deep learning repository into a reproducible, readable, citation-ready research artifact without breaking existing experiments.
 
+## Beautiful Means
+
+Optimize for these outcomes, in order:
+
+- Beautiful to understand in 60 seconds: the first screen shows the task, model family, output, links, and main result without requiring a paper read.
+- Beautiful to run in 5 minutes: a fresh clone has one install path and one tiny CPU or clearly GPU-marked smoke command.
+- Beautiful to reproduce: configs, checkpoints, data layout, evaluation commands, metrics, and expected tolerance are connected.
+- Beautiful to inspect visually: README images are real outputs, architecture diagrams, screenshots, or synthetic-safe examples, not decorative filler.
+- Beautiful to extend: Python modules have clear boundaries, names, docstrings, tensor contracts, and explicit side effects.
+- Beautiful to cite: paper, BibTeX, `CITATION.cff`, license, model/data limitations, and acknowledgements are discoverable.
+
 ## Operating Rules
 
 - Preserve existing behavior first. Treat every move, rename, and configuration change as a migration that must keep old commands working or document the replacement.
@@ -27,8 +38,10 @@ Use this skill to turn a deep learning repository into a reproducible, readable,
    - model zoo: many configs/checkpoints with common training/eval code.
    - application demo: inference-first with pretrained weights.
    - production ML: serving, monitoring, and deployment are primary concerns.
+   - restricted scientific/medical release: data access, privacy, and protocol clarity are primary concerns.
 3. Run `scripts/audit_dl_repo.py <repo>` from this skill when Python is available. Use the output as a checklist, not as an absolute verdict.
 4. Read the relevant reference:
+   - `references/repo-type-playbooks.md` immediately after classifying the repository type.
    - `references/high-impact-patterns.md` before claiming or applying "high-quality deep learning repository" standards.
    - `references/research-release-standard.md` for paper/research repositories.
    - `references/migration-playbook.md` before moving files or changing entry points.
@@ -113,6 +126,7 @@ A normalized deep learning repo should have:
 - Clear checkpoint/weight download instructions and checksum/version notes when available.
 - Tests that prove imports, config loading, model construction, one forward pass, and at least one metric path.
 - README sections for badges, visual project signal, installation, quickstart, reproduction, results, model/checkpoint table, citation, license, and acknowledgements.
+- README images and links point to real assets or are explicitly removed. Do not leave `href="#"`, fake checkpoint links, fake metrics, or placeholder screenshots in a finished README.
 - Public modules, classes, and functions use consistent naming, type hints where practical, and docstrings that explain shapes, units, devices, and side effects.
 - Training, evaluation, and inference code avoids hidden import-time side effects, author-local absolute paths, and unstructured global state.
 - `CITATION.cff` and BibTeX for paper repositories.

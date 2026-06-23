@@ -4,6 +4,12 @@ Use this reference before writing or polishing a deep learning repository README
 
 For a ready-to-copy skeleton, use `assets/readme-templates/visual-research-readme.md`.
 
+## Design Target
+
+The README is the repository's product surface. It should make a serious technical project look inspectable, runnable, and citable without making unverifiable marketing claims.
+
+Use GitHub-native Markdown plus conservative HTML tables. Avoid layouts that depend on custom CSS, JavaScript, profile-only widgets, or external assets that may disappear.
+
 ## First Screen
 
 The first visible screen should answer:
@@ -23,7 +29,7 @@ Recommended order:
 
 **One-sentence task/model/research claim.**
 
-[Paper](#) | [Project Page](#) | [Demo](#) | [Docs](#) | [Checkpoints](#) | [Dataset](#) | [Citation](#)
+[Paper](REPLACE_OR_REMOVE) | [Project Page](REPLACE_OR_REMOVE) | [Demo](REPLACE_OR_REMOVE) | [Docs](REPLACE_OR_REMOVE) | [Checkpoints](REPLACE_OR_REMOVE) | [Dataset](REPLACE_OR_REMOVE) | [Citation](#citation)
 
 ![Representative output](assets/figures/teaser.png)
 
@@ -55,6 +61,19 @@ For deep learning repositories, prefer this order:
 5. Model/result cards: pretrained models, benchmark results, reproduction commands.
 6. Details: setup, data, training, evaluation, docs, citation, license.
 
+## Visual Mode By Repository Type
+
+Choose the visual pattern that matches the repository's promise:
+
+| Repo type | Best first visual | Best card block | Avoid |
+| --- | --- | --- | --- |
+| Paper release | teaser, architecture, or qualitative result grid | paper snapshot: task, datasets, headline result, checkpoints, reproduction | logo-only first screen |
+| Method/library | compact logo plus API quickstart or architecture diagram | feature/API cards and compatibility matrix | long abstract before install/import |
+| Model zoo | model family banner or benchmark overview | checkpoint cards/table and result matrix | prose descriptions for dozens of models |
+| Inference demo/app | screenshot, GIF, before/after grid, or hosted demo preview | task, input types, checkpoint, runtime, demo links | paper-style wall of text |
+| Production ML | system architecture diagram or request/response screenshot | serving, latency, hardware, endpoint, monitoring cards | unqualified benchmark claims |
+| Restricted medical/scientific | protocol diagram, approved anonymized visual, synthetic example, or aggregate plot | data access/protocol/metric/limitation cards | private examples, patient data, or fake results |
+
 ## Visual README Requirements
 
 For deep learning repositories, prefer a card-based README over a plain text-only README.
@@ -70,6 +89,17 @@ Minimum visual standard:
 
 Use `assets/figures/teaser.png` or `assets/figures/overview.png` for primary visuals. If no real image exists, create a placeholder figure only if the user approves; do not invent qualitative results or fake metrics.
 
+## Aesthetic Rules That Survive GitHub Rendering
+
+- Use one visual anchor near the top. Pick either a logo/banner plus screenshot or a model-output teaser. Do not stack several large images before Quickstart.
+- Use 3 to 6 badges. Prefer paper, docs, package, tests, license, and model hub. Badge overload reduces clarity.
+- Use a compact link hub directly under the one-sentence claim.
+- Use HTML tables for cards because they render consistently in GitHub Markdown.
+- Keep card text short: one label, one value, one optional link.
+- Use screenshots, GIFs, architecture diagrams, qualitative grids, and benchmark plots only when they reveal actual project behavior.
+- Put long explanations, full ablations, and dataset setup detail in `docs/` and link them from the README.
+- Do not ship dead placeholders: replace or remove `REPLACE_OR_REMOVE`, `href="#"`, fake checkpoint links, fake metrics, and missing image paths before finishing. Real section anchors such as `#citation` and `#license` are fine.
+
 ## Card Templates
 
 GitHub README supports a safe subset of HTML. Use HTML tables for visually stable "cards" because they render reliably on GitHub.
@@ -81,13 +111,13 @@ GitHub README supports a safe subset of HTML. Use HTML tables for visually stabl
   <h1>Project Name</h1>
   <p><strong>Short model/task claim in one sentence.</strong></p>
   <p>
-    <a href="#"><img src="https://img.shields.io/badge/Paper-arXiv-b31b1b" alt="Paper"></a>
-    <a href="#"><img src="https://img.shields.io/badge/Docs-online-blue" alt="Docs"></a>
-    <a href="#"><img src="https://img.shields.io/badge/License-MIT-green" alt="License"></a>
+    <a href="REPLACE_OR_REMOVE"><img src="https://img.shields.io/badge/Paper-arXiv-b31b1b" alt="Paper"></a>
+    <a href="REPLACE_OR_REMOVE"><img src="https://img.shields.io/badge/Docs-online-blue" alt="Docs"></a>
+    <a href="#license"><img src="https://img.shields.io/badge/License-MIT-green" alt="License"></a>
   </p>
   <p>
-    <a href="https://arxiv.org/abs/...">Paper</a> |
-    <a href="https://project-page.example">Project Page</a> |
+    <a href="REPLACE_OR_REMOVE">Paper</a> |
+    <a href="REPLACE_OR_REMOVE">Project Page</a> |
     <a href="docs/reproduction.md">Reproduce</a> |
     <a href="#pretrained-models">Checkpoints</a> |
     <a href="#citation">Citation</a>
@@ -96,6 +126,27 @@ GitHub README supports a safe subset of HTML. Use HTML tables for visually stabl
     <img src="assets/figures/teaser.png" alt="Qualitative results from Project Name" width="900">
   </p>
 </div>
+```
+
+### Nameplate Cards
+
+Use these directly below the hero for repos where people need facts before prose:
+
+```markdown
+<table>
+  <tr>
+    <td><strong>Task</strong><br>REPLACE_OR_REMOVE</td>
+    <td><strong>Input</strong><br>REPLACE_OR_REMOVE</td>
+    <td><strong>Output</strong><br>REPLACE_OR_REMOVE</td>
+    <td><strong>License</strong><br>REPLACE_OR_REMOVE</td>
+  </tr>
+  <tr>
+    <td><strong>Main result</strong><br>REPLACE_OR_REMOVE</td>
+    <td><strong>Weights</strong><br>REPLACE_OR_REMOVE</td>
+    <td><strong>Hardware</strong><br>REPLACE_OR_REMOVE</td>
+    <td><strong>Smoke test</strong><br>CPU / GPU / unavailable</td>
+  </tr>
+</table>
 ```
 
 ### At-A-Glance Cards
@@ -186,13 +237,13 @@ Use compact cards when there are only a few checkpoints:
       <strong>Base Model</strong><br>
       Dataset: COCO<br>
       Metric: 42.0 mAP<br>
-      <a href="#">checkpoint</a> | <a href="configs/base.yaml">config</a>
+      <a href="REPLACE_OR_REMOVE">checkpoint</a> | <a href="configs/base.yaml">config</a>
     </td>
     <td>
       <strong>Large Model</strong><br>
       Dataset: COCO<br>
       Metric: 45.8 mAP<br>
-      <a href="#">checkpoint</a> | <a href="configs/large.yaml">config</a>
+      <a href="REPLACE_OR_REMOVE">checkpoint</a> | <a href="configs/large.yaml">config</a>
     </td>
   </tr>
 </table>

@@ -23,6 +23,7 @@ jobs:
           test -f skills/beautiful-dl-repo/references/code-style-standard.md
           test -f skills/beautiful-dl-repo/references/high-impact-patterns.md
           test -f skills/beautiful-dl-repo/references/readme-standard.md
+          test -f skills/beautiful-dl-repo/references/repo-type-playbooks.md
           test -f skills/beautiful-dl-repo/references/sources-reviewed.md
           test -f skills/beautiful-dl-repo/references/research-release-standard.md
           test -f skills/beautiful-dl-repo/references/migration-playbook.md
@@ -47,4 +48,4 @@ jobs:
         run: python -m unittest discover -s tests
 
       - name: Run audit script on this repository
-        run: python skills/beautiful-dl-repo/scripts/audit_dl_repo.py . || true
+        run: python skills/beautiful-dl-repo/scripts/audit_dl_repo.py . || test $? -eq 1

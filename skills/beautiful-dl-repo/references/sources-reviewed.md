@@ -28,6 +28,9 @@ Use this file to understand the evidence base behind the skill. The list is repr
 - Ultralytics: https://github.com/ultralytics/ultralytics
 - Segment Anything: https://github.com/facebookresearch/segment-anything
 - MMDetection: https://github.com/open-mmlab/mmdetection
+- Awesome README: https://github.com/matiassingers/awesome-readme
+- Open Model Zoo: https://github.com/openvinotoolkit/open_model_zoo
+- ONNX Model Zoo: https://github.com/onnx/models
 
 Use these for presentation patterns: centered hero blocks, logo or output images, badges, compact link hubs, short install paths, demo screenshots/GIFs, feature cards, example galleries, model/result tables, and links to deeper docs. Do not copy content claims.
 
@@ -59,3 +62,15 @@ Do not copy any single repository wholesale. Use the common patterns:
 - package-quality Python code
 - smoke tests and CI that do not require full datasets by default
 - citation, license, and contribution metadata
+
+## README Pattern Notes
+
+The README guidance intentionally combines research-code patterns with polished product README patterns:
+
+- Transformers-style libraries emphasize a short promise, installation compatibility, quick usage, and links to a broader model/checkpoint ecosystem.
+- Dify, Gradio, and Streamlit-style product READMEs use a strong first-screen identity, screenshots or demos, compact links, quickstart, and feature cards.
+- Ultralytics and OpenMMLab-style vision/model-zoo READMEs make docs, installation, model zoo, training, prediction, and deployment paths visible early.
+- Segment Anything-style research releases make paper/project/demo/dataset links, visual outputs, getting-started examples, and checkpoint access obvious.
+- GitHub README and citation guidance supports keeping the repository README discoverable, rendered with GitHub Markdown, and paired with `CITATION.cff` when citation matters.
+
+Translate those patterns into repo-type-specific layouts instead of forcing every deep learning repo into the same README shape.
