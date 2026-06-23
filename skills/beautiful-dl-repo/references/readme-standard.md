@@ -47,6 +47,7 @@ High-star repositories tend to converge on the same presentation structure:
 - centered hero with title, short claim, badges, and compact link hub
 - one strong image or GIF before long prose
 - very short "install + run" path near the top
+- emoji-led section labels when the repository is meant to feel approachable
 - feature cards or use-case cards for fast scanning
 - example gallery for visual products or model outputs
 - model/checkpoint/result tables for technical credibility
@@ -60,6 +61,22 @@ For deep learning repositories, prefer this order:
 4. Quickstart: install and one inference/demo command.
 5. Model/result cards: pretrained models, benchmark results, reproduction commands.
 6. Details: setup, data, training, evaluation, docs, citation, license.
+
+## Rich README Mode
+
+Use this mode when the user asks for an `awesome-*`, Qwen-like, or visually rich README.
+
+Recommended ingredients:
+
+- a banner, logo, teaser, or screenshot before the first long paragraph
+- 3 to 6 badges for paper/docs/package/tests/license/model hub
+- a link hub with emoji labels only when it improves scanning
+- emoji section headers such as `🚀 Quickstart`, `🖼️ Gallery`, `📦 Models`, `🧪 Reproduction`, `📚 Docs`, and `🙏 Citation`
+- two-row card tables for "what it does", "what is included", or "why use it"
+- one image gallery or model-output panel for visual tasks
+- a compact "choose your path" table for training, evaluation, inference, reproduction, and docs
+
+Keep the tone technical. Emojis should act as visual anchors, not replace precise names, commands, or metrics.
 
 ## Visual Mode By Repository Type
 

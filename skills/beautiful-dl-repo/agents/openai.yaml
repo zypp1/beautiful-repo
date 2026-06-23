@@ -1,4 +1,4 @@
 interface:
-  display_name: "Beautiful DL Repo"
-  short_description: "Make deep learning repositories beautiful, reproducible, and citation-ready."
-  default_prompt: "Use $beautiful-dl-repo to audit and polish this deep learning repository into a beautiful, reproducible research release."
+  display_name: "Beautiful DL Repo Kit"
+  short_description: "Make deep learning repositories visual, reproducible, and citation-ready."
+  default_prompt: "Use $beautiful-dl-repo to audit and polish this deep learning repository into a visual, reproducible research release."

@@ -1,10 +1,12 @@
 <div align="center">
-  <h1>Beautiful DL Repo</h1>
-  <p><strong>Codex skill for turning deep learning repositories into beautiful, reproducible, citation-ready research releases.</strong></p>
+  <img src="assets/beautiful-dl-repo-kit.svg" alt="Beautiful DL Repo Kit banner" width="100%">
+  <h1>✨ Beautiful DL Repo Kit</h1>
+  <p><strong>Turn deep learning repositories into visual, reproducible, citation-ready GitHub releases.</strong></p>
   <p>
     <a href="skills/beautiful-dl-repo/SKILL.md"><img src="https://img.shields.io/badge/Codex%20Skill-beautiful--dl--repo-111827" alt="Codex Skill"></a>
-    <a href="skills/beautiful-dl-repo/references/readme-standard.md"><img src="https://img.shields.io/badge/README-visual%20standard-2563eb" alt="README visual standard"></a>
-    <a href="#license"><img src="https://img.shields.io/badge/License-MIT-16a34a" alt="License"></a>
+    <a href="skills/beautiful-dl-repo/references/readme-standard.md"><img src="https://img.shields.io/badge/README-rich%20visual%20standard-2563eb" alt="README rich visual standard"></a>
+    <a href="skills/beautiful-dl-repo/scripts/audit_dl_repo.py"><img src="https://img.shields.io/badge/Audit-script-0f766e" alt="Audit script"></a>
+    <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-16a34a" alt="License"></a>
   </p>
   <p>
     <a href="skills/beautiful-dl-repo/SKILL.md">Skill</a> |
@@ -15,27 +17,30 @@
   </p>
 </div>
 
+## 🌟 What This Is
+
+**Beautiful DL Repo Kit** is a Codex skill for upgrading PyTorch, TensorFlow, JAX, Lightning, Hugging Face, MONAI, or custom training repositories into releases that people can understand, run, inspect, and cite.
+
 <table>
   <tr>
-    <td><strong>README polish</strong><br>Hero, badges, link hub, cards, gallery, quickstart, checkpoints, and results.</td>
-    <td><strong>Research release</strong><br>Configs, reproduction docs, model/data cards, citation, license, and limitations.</td>
-    <td><strong>Python quality</strong><br>Docstrings, tensor contracts, names, module boundaries, tests, and CI gates.</td>
+    <td><strong>🎨 README polish</strong><br>Hero, badges, link hub, screenshots, galleries, quickstart, checkpoints, and result cards.</td>
+    <td><strong>🧪 Research release</strong><br>Configs, reproduction docs, model/data cards, citation, license, and limitations.</td>
+    <td><strong>🧠 Python quality</strong><br>Docstrings, tensor contracts, names, module boundaries, tests, and CI gates.</td>
   </tr>
 </table>
 
-Use it when you want an agent to audit or refactor PyTorch, TensorFlow, JAX, Lightning, Hugging Face, MONAI, or custom training repositories for:
+## 🧭 What It Helps Codex Fix
 
-- research-grade project layout
-- train/eval/infer entry points
-- Python code style, names, docstrings, and module boundaries
-- experiment configuration
-- reproducibility documentation
-- polished README design
-- smoke tests and quality gates
-- model cards, data cards, and `CITATION.cff`
-- GitHub-ready open-source release hygiene
+| Area | What gets normalized |
+| --- | --- |
+| 🗂️ Repository shape | Research-grade layout, configs, scripts, docs, tests, and release metadata. |
+| 🚀 Entry points | Stable `train.py`, `eval.py`, `infer.py`, and smoke-test commands. |
+| 🎨 README | Visual hero, badges, navigation, screenshots, model cards, checkpoint tables, and results. |
+| 🧠 Code style | Clear names, docstrings, tensor shapes, type hints, function boundaries, and side effects. |
+| 📦 Research artifacts | Model cards, data cards, `CITATION.cff`, BibTeX, limitations, and acknowledgements. |
+| ✅ Quality gates | Import checks, config checks, one-batch tests, CI, and artifact ignore rules. |
 
-## Install
+## 🚀 Install
 
 Install the skill with any Codex-compatible skills installer that supports GitHub repositories:
 
@@ -53,7 +58,7 @@ skills/beautiful-dl-repo -> ~/.codex/skills/beautiful-dl-repo
 
 Restart Codex after installation.
 
-## Use
+## ⚡ Use
 
 Ask Codex:
 
@@ -67,10 +72,29 @@ For an implementation pass:
 Use $beautiful-dl-repo to normalize this PyTorch repository. Keep old training commands compatible, add missing docs/tests/configs, polish the visual README, and validate with smoke checks.
 ```
 
-## Repository Layout
+## 🖼️ README Style It Enforces
+
+The bundled README standard pushes deep learning projects toward a richer, easier-to-scan style:
+
+<table>
+  <tr>
+    <td><strong>✨ First-screen signal</strong><br>Title, tagline, badges, link hub, and one real visual.</td>
+    <td><strong>📸 Visual proof</strong><br>Teaser image, architecture diagram, qualitative grid, screenshot, or GIF.</td>
+    <td><strong>🧾 Compact facts</strong><br>Task, model, datasets, metrics, checkpoints, runtime, and hardware cards.</td>
+  </tr>
+  <tr>
+    <td><strong>🚀 Fast path</strong><br>Install plus one command before long documentation.</td>
+    <td><strong>🏆 Credibility</strong><br>Checkpoint/model tables, result tables, and exact eval commands.</td>
+    <td><strong>📚 Research hygiene</strong><br>Reproduction, data, model card, citation, license, and limitations.</td>
+  </tr>
+</table>
+
+## 📦 Repository Layout
 
 ```text
 .
+  assets/
+    beautiful-dl-repo-kit.svg
   skills/
     beautiful-dl-repo/
       SKILL.md
@@ -97,7 +121,7 @@ Use $beautiful-dl-repo to normalize this PyTorch repository. Keep old training c
       validate.yml
 ```
 
-## What The Skill Optimizes For
+## 🧪 What The Skill Optimizes For
 
 The skill is intentionally conservative. It tells Codex to preserve existing behavior, avoid full training runs unless requested, and migrate a repository in small reviewable steps.
 
@@ -107,7 +131,7 @@ The standards were distilled from a representative sample of high-impact deep le
 
 The full source list is in `skills/beautiful-dl-repo/references/sources-reviewed.md`.
 
-## Audit Script
+## 🔍 Audit Script
 
 The bundled audit script can be run directly:
 
@@ -119,6 +143,18 @@ The script checks for common release-readiness signals such as README, license, 
 
 The output is a starting checklist, not a substitute for reading the repository.
 
-## License
+## 📛 Name
+
+Recommended public name: **Beautiful DL Repo Kit**.
+
+Recommended repository slug: `beautiful-dl-repo-kit`.
+
+The skill id remains `beautiful-dl-repo` so prompts stay short:
+
+```text
+Use $beautiful-dl-repo to polish this deep learning repo.
+```
+
+## 📄 License
 
 MIT

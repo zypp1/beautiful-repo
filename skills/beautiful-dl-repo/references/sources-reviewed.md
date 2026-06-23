@@ -16,9 +16,11 @@ Use this file to understand the evidence base behind the skill. The list is repr
 - PyTorch Lightning: https://github.com/Lightning-AI/pytorch-lightning
 - TorchVision: https://github.com/pytorch/vision
 - CLIP: https://github.com/openai/CLIP
+- Qwen: https://github.com/QwenLM/Qwen
 
 ## High-Star README Design Samples
 
+- Awesome LLM Apps: https://github.com/Shubhamsaboo/awesome-llm-apps
 - LangChain: https://github.com/langchain-ai/langchain
 - Dify: https://github.com/langgenius/dify
 - Gradio: https://github.com/gradio-app/gradio
@@ -68,6 +70,8 @@ Do not copy any single repository wholesale. Use the common patterns:
 The README guidance intentionally combines research-code patterns with polished product README patterns:
 
 - Transformers-style libraries emphasize a short promise, installation compatibility, quick usage, and links to a broader model/checkpoint ecosystem.
+- Awesome LLM Apps-style curated READMEs use emoji-led category navigation, visual section anchors, dense resource tables, and approachable scanning for broad audiences.
+- Qwen-style model READMEs use strong project identity, platform/model links, news, quickstart, model tables, and multilingual/community entry points.
 - Dify, Gradio, and Streamlit-style product READMEs use a strong first-screen identity, screenshots or demos, compact links, quickstart, and feature cards.
 - Ultralytics and OpenMMLab-style vision/model-zoo READMEs make docs, installation, model zoo, training, prediction, and deployment paths visible early.
 - Segment Anything-style research releases make paper/project/demo/dataset links, visual outputs, getting-started examples, and checkpoint access obvious.

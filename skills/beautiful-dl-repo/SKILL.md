@@ -3,7 +3,7 @@ name: beautiful-dl-repo
 description: Standardize deep learning and machine learning research repositories into reproducible, citation-ready, maintainable project structures and polished open-source releases. Use when auditing or refactoring PyTorch, TensorFlow, JAX, Lightning, Hugging Face, MONAI, or custom training repositories for project layout, experiment configuration, training/evaluation/inference entry points, Python code style, docstrings, naming, module boundaries, packaging, tests, documentation, beautiful README design, model cards, data cards, CITATION.cff, CI quality gates, and open-source research release readiness.
 ---
 
-# Beautiful DL Repo
+# Beautiful DL Repo Kit
 
 Use this skill to turn a deep learning repository into a reproducible, readable, citation-ready research artifact without breaking existing experiments.
 

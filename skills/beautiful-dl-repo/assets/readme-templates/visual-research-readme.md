@@ -1,5 +1,5 @@
 <div align="center">
-  <h1>Project Name</h1>
+  <h1>✨ Project Name</h1>
   <p><strong>Short task/model claim in one sentence.</strong></p>
   <p>
     <a href="REPLACE_OR_REMOVE"><img src="https://img.shields.io/badge/Paper-arXiv-b31b1b" alt="Paper"></a>
@@ -21,7 +21,7 @@
 
 > Before release: replace or remove every `REPLACE_OR_REMOVE`, missing image path, fake metric, and unavailable checkpoint link.
 
-## Snapshot
+## 🧭 Snapshot
 
 <table>
   <tr>
@@ -36,7 +36,7 @@
   </tr>
 </table>
 
-## Highlights
+## ✨ Highlights
 
 <table>
   <tr>
@@ -46,7 +46,7 @@
   </tr>
 </table>
 
-## Gallery
+## 🖼️ Gallery
 
 <table>
   <tr>
@@ -61,7 +61,7 @@
   </tr>
 </table>
 
-## Quickstart
+## 🚀 Quickstart
 
 ```bash
 python -m pip install -e ".[dev]"
@@ -72,7 +72,7 @@ python scripts/infer.py \
   --output outputs/demo
 ```
 
-## Pretrained Models
+## 📦 Pretrained Models
 
 <table>
   <tr>
@@ -91,13 +91,22 @@ python scripts/infer.py \
   </tr>
 </table>
 
-## Reproducing Results
+## 🧪 Reproducing Results
 
 | Setting | Config | Checkpoint | Command | Metric | Expected |
 | --- | --- | --- | --- | --- | --- |
 | Main result | `configs/main.yaml` | `model.pt` | `python scripts/eval.py --config configs/main.yaml --checkpoint model.pt` | Metric | 0.00 |
 
-## Citation
+## 📚 Docs
+
+| Topic | Link |
+| --- | --- |
+| Installation | `docs/setup.md` |
+| Data preparation | `docs/data.md` |
+| Reproduction | `docs/reproduction.md` |
+| Model card | `docs/model_card.md` |
+
+## 🙏 Citation
 
 If this repository helps your research, please cite:
 

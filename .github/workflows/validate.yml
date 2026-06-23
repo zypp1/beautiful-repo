@@ -20,6 +20,7 @@ jobs:
           test -f skills/beautiful-dl-repo/agents/openai.yaml
           test -f skills/beautiful-dl-repo/scripts/audit_dl_repo.py
           test -f skills/beautiful-dl-repo/assets/readme-templates/visual-research-readme.md
+          test -f assets/beautiful-dl-repo-kit.svg
           test -f skills/beautiful-dl-repo/references/code-style-standard.md
           test -f skills/beautiful-dl-repo/references/high-impact-patterns.md
           test -f skills/beautiful-dl-repo/references/readme-standard.md
