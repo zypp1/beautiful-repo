@@ -19,6 +19,7 @@ jobs:
           test -f skills/standardize-dl-repo/SKILL.md
           test -f skills/standardize-dl-repo/agents/openai.yaml
           test -f skills/standardize-dl-repo/scripts/audit_dl_repo.py
+          test -f skills/standardize-dl-repo/assets/readme-templates/visual-research-readme.md
           test -f skills/standardize-dl-repo/references/code-style-standard.md
           test -f skills/standardize-dl-repo/references/high-impact-patterns.md
           test -f skills/standardize-dl-repo/references/readme-standard.md

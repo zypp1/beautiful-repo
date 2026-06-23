@@ -1,6 +1,8 @@
 # README Standard
 
-Use this reference before writing or polishing a deep learning repository README.
+Use this reference before writing or polishing a deep learning repository README. The README should feel like a clear research product page: visual first, scannable cards second, full reproducibility details third.
+
+For a ready-to-copy skeleton, use `assets/readme-templates/visual-research-readme.md`.
 
 ## First Screen
 
@@ -15,18 +17,124 @@ The first visible screen should answer:
 Recommended order:
 
 ```markdown
+<div align="center">
+
 # Project Name
 
-One-sentence task/model/research claim.
+**One-sentence task/model/research claim.**
 
-[Paper] [Project Page] [Demo] [Docs] [Checkpoints] [Dataset] [Citation]
+[Paper](#) · [Project Page](#) · [Demo](#) · [Docs](#) · [Checkpoints](#) · [Dataset](#) · [Citation](#)
 
 ![Representative output](assets/figures/teaser.png)
+
+</div>
 
 ## Quickstart
 ```
 
 Use badges sparingly. Good badges: license, tests, docs, package version, paper/arXiv, model hub. Avoid noisy badges that do not help users decide whether to use the repo.
+
+## Visual README Requirements
+
+For deep learning repositories, prefer a card-based README over a plain text-only README.
+
+Minimum visual standard:
+
+- one teaser image, qualitative result grid, architecture diagram, or demo GIF near the top
+- one compact link hub for paper, project page, docs, demo, dataset, checkpoints, and citation
+- one task/model information card block
+- one results or benchmark card/table
+- one checkpoint/model card table
+- one quickstart command visible before long documentation
+
+Use `assets/figures/teaser.png` or `assets/figures/overview.png` for primary visuals. If no real image exists, create a placeholder figure only if the user approves; do not invent qualitative results or fake metrics.
+
+## Card Templates
+
+GitHub README supports a safe subset of HTML. Use HTML tables for visually stable "cards" because they render reliably on GitHub.
+
+### Hero With Link Hub
+
+```markdown
+<div align="center">
+  <h1>Project Name</h1>
+  <p><strong>Short model/task claim in one sentence.</strong></p>
+  <p>
+    <a href="https://arxiv.org/abs/...">Paper</a> |
+    <a href="https://project-page.example">Project Page</a> |
+    <a href="docs/reproduction.md">Reproduce</a> |
+    <a href="#pretrained-models">Checkpoints</a> |
+    <a href="#citation">Citation</a>
+  </p>
+  <p>
+    <img src="assets/figures/teaser.png" alt="Qualitative results from Project Name" width="900">
+  </p>
+</div>
+```
+
+### Research Snapshot Cards
+
+```markdown
+<table>
+  <tr>
+    <td><strong>Task</strong></td>
+    <td>Semantic segmentation / object detection / restoration</td>
+  </tr>
+  <tr>
+    <td><strong>Backbone</strong></td>
+    <td>ViT-B / ResNet-50 / custom encoder</td>
+  </tr>
+  <tr>
+    <td><strong>Datasets</strong></td>
+    <td>Cityscapes, COCO, custom dataset</td>
+  </tr>
+  <tr>
+    <td><strong>Best result</strong></td>
+    <td>88.1 mIoU on validation split</td>
+  </tr>
+  <tr>
+    <td><strong>Runtime</strong></td>
+    <td>1x A100 for training; CPU smoke test available</td>
+  </tr>
+</table>
+```
+
+### Feature Cards
+
+```markdown
+<table>
+  <tr>
+    <td width="33%"><strong>Reproducible</strong><br>Published configs and exact eval commands.</td>
+    <td width="33%"><strong>Ready to use</strong><br>Pretrained checkpoints and inference script.</td>
+    <td width="33%"><strong>Extensible</strong><br>Modular datasets, models, losses, and metrics.</td>
+  </tr>
+</table>
+```
+
+### Model Cards In README
+
+Use compact cards when there are only a few checkpoints:
+
+```markdown
+<table>
+  <tr>
+    <td>
+      <strong>Base Model</strong><br>
+      Dataset: COCO<br>
+      Metric: 42.0 mAP<br>
+      <a href="#">checkpoint</a> · <a href="configs/base.yaml">config</a>
+    </td>
+    <td>
+      <strong>Large Model</strong><br>
+      Dataset: COCO<br>
+      Metric: 45.8 mAP<br>
+      <a href="#">checkpoint</a> · <a href="configs/large.yaml">config</a>
+    </td>
+  </tr>
+</table>
+```
+
+Use Markdown tables when there are many checkpoints.
 
 ## Required Sections
 
@@ -76,7 +184,7 @@ python scripts/infer.py \
 
 ## Checkpoint Table
 
-Use tables when there are multiple models:
+Use cards for one to three models and tables when there are multiple models:
 
 | Model | Config | Dataset | Metric | Checkpoint | Notes |
 | --- | --- | --- | --- | --- | --- |
@@ -97,23 +205,45 @@ State tolerance and known nondeterminism.
 ## Visual Presentation
 
 - Use one clear teaser, architecture diagram, or qualitative result near the top.
+- Prefer task/model cards for important facts instead of long prose.
+- Use a result card or table for headline metrics; do not bury metrics in paragraphs.
 - Keep images committed under `assets/figures/` when small; use external hosting or releases for large files.
 - Prefer short paragraphs, tables, and command blocks.
 - Keep heading levels consistent.
 - Avoid walls of badges, huge GIFs, uncompressed images, and long changelogs above usage instructions.
+- Avoid fake UI polish: no invented results, no generic stock-like images, no decorative images unrelated to the model output.
+
+## Image Requirements
+
+Primary image quality matters:
+
+- Use real qualitative outputs, architecture diagrams, benchmark visualizations, or demo screenshots.
+- Add alt text that describes what the image shows.
+- Keep width reasonable with HTML, usually `width="900"` for a centered hero image.
+- Store small images under `assets/figures/`; put large images in releases, docs hosting, or external artifact storage.
+- If results are privacy-sensitive or licensed, use diagrams or synthetic examples instead of restricted data.
+
+## README Polish Checklist
+
+- [ ] The first screen has a centered title, short claim, link hub, and visual.
+- [ ] A new user can identify task, model type, dataset, best result, and checkpoint availability without scrolling far.
+- [ ] Quickstart appears before long installation/reproduction detail.
+- [ ] Checkpoints are shown as cards or tables with config, dataset, metric, and link.
+- [ ] Results are shown as cards or tables with exact eval command or config.
+- [ ] Images have useful alt text and point to real repository assets.
+- [ ] The README links to deeper docs instead of becoming a long paper appendix.
+- [ ] No fake metrics, fake screenshots, or unverifiable claims are introduced.
 
 ## Citation Section
 
 Include both `CITATION.cff` and BibTeX when there is a paper:
 
-```markdown
+```text
 ## Citation
 
 If this repository helps your research, please cite:
 
-```bibtex
-@inproceedings{...}
-```
+    @inproceedings{...}
 ```
 
 Make sure citation title/authors/year match the paper and `CITATION.cff`.

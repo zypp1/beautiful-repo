@@ -43,6 +43,18 @@ README_SECTIONS = [
     "license",
 ]
 
+README_VISUAL_TOKENS = ["![", "<img", ".png", ".jpg", ".jpeg", ".gif", ".webp"]
+README_CARD_TOKENS = ["<table", "<td", "<div", "width=\"33%\"", "width=\"900\""]
+README_LINK_TARGETS = [
+    "paper",
+    "project page",
+    "demo",
+    "docs",
+    "checkpoints",
+    "dataset",
+    "citation",
+]
+
 ENTRYPOINTS = [
     "scripts/train.py",
     "scripts/eval.py",
@@ -199,8 +211,13 @@ def audit(root: Path) -> int:
     ignored_artifacts = [name for name in ARTIFACT_DIRS if name in gitignore]
     existing_artifacts = [name for name in ARTIFACT_DIRS if (root / name).exists()]
     readme_sections = [section for section in README_SECTIONS if section in readme]
-    readme_has_visual = any(token in readme for token in ["![", "<img", ".png", ".jpg", ".jpeg", ".gif"])
+    readme_has_visual = any(token in readme for token in README_VISUAL_TOKENS)
+    readme_has_cards = any(token in readme for token in README_CARD_TOKENS)
     readme_has_links = readme.count("](") >= 3 or readme.count("<a ") >= 3
+    readme_link_targets = [target for target in README_LINK_TARGETS if target in readme]
+    readme_has_link_hub = len(readme_link_targets) >= 4
+    readme_has_checkpoint_signal = any(token in readme for token in ["checkpoint", "pretrained", "model zoo", "weights"])
+    readme_has_result_signal = any(token in readme for token in ["result", "benchmark", "metric", "miou", "map", "accuracy", "dice"])
     python_files = iter_python_files(root)
     py_stats = {
         "syntax_errors": 0,
@@ -225,6 +242,10 @@ def audit(root: Path) -> int:
         ("README", "README.md" in present_root),
         ("README core sections", len(readme_sections) >= 5),
         ("README visual or link hub", readme_has_visual or readme_has_links),
+        ("README card-style first screen", readme_has_cards and readme_has_visual),
+        ("README research link hub", readme_has_link_hub),
+        ("README checkpoint/model signal", readme_has_checkpoint_signal),
+        ("README result signal", readme_has_result_signal),
         ("license", "LICENSE" in present_root),
         ("citation", "CITATION.cff" in present_root),
         ("pyproject", "pyproject.toml" in present_root),
@@ -265,6 +286,11 @@ def audit(root: Path) -> int:
     print(f"- tests: {len(tests)}")
     print(f"- notebooks: {len(notebooks)}")
     print(f"- README sections: {', '.join(readme_sections) if readme_sections else 'none'}")
+    print(f"- README visual signal: {'yes' if readme_has_visual else 'no'}")
+    print(f"- README card signal: {'yes' if readme_has_cards else 'no'}")
+    print(f"- README link targets: {', '.join(readme_link_targets) if readme_link_targets else 'none'}")
+    print(f"- README checkpoint/model signal: {'yes' if readme_has_checkpoint_signal else 'no'}")
+    print(f"- README result signal: {'yes' if readme_has_result_signal else 'no'}")
     print(f"- Python files: {len(python_files)}")
     print(f"- public definitions: {py_stats['public_defs']}")
     print(f"- public definitions missing docstrings: {py_stats['missing_docstrings']}")

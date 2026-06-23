@@ -63,6 +63,9 @@ Use $standardize-dl-repo to normalize this PyTorch repository. Keep old training
         sources-reviewed.md
       scripts/
         audit_dl_repo.py
+      assets/
+        readme-templates/
+          visual-research-readme.md
   tests/
     test_audit_dl_repo.py
   .github/
