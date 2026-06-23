@@ -1,0 +1,4 @@
+interface:
+  display_name: "Standardize DL Repo"
+  short_description: "Standardize deep learning research repositories for reproducibility and citation readiness."
+  default_prompt: "Use $standardize-dl-repo to audit and normalize this deep learning repository for reproducible research."

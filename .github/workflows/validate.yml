@@ -1,0 +1,42 @@
+name: validate
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Check required skill files
+        run: |
+          test -f skills/standardize-dl-repo/SKILL.md
+          test -f skills/standardize-dl-repo/agents/openai.yaml
+          test -f skills/standardize-dl-repo/scripts/audit_dl_repo.py
+          test -f skills/standardize-dl-repo/references/research-release-standard.md
+          test -f skills/standardize-dl-repo/references/migration-playbook.md
+          test -f skills/standardize-dl-repo/references/framework-notes.md
+
+      - name: Check skill metadata
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          text = Path("skills/standardize-dl-repo/SKILL.md").read_text(encoding="utf-8")
+          assert text.startswith("---\n"), "SKILL.md must start with YAML frontmatter"
+          frontmatter = text.split("---", 2)[1]
+          assert "name: standardize-dl-repo" in frontmatter
+          assert "description:" in frontmatter
+          PY
+
+      - name: Compile audit script
+        run: python -m py_compile skills/standardize-dl-repo/scripts/audit_dl_repo.py
+
+      - name: Run audit script on this repository
+        run: python skills/standardize-dl-repo/scripts/audit_dl_repo.py . || true
