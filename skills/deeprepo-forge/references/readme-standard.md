@@ -23,7 +23,7 @@ Recommended order:
 
 **One-sentence task/model/research claim.**
 
-[Paper](#) · [Project Page](#) · [Demo](#) · [Docs](#) · [Checkpoints](#) · [Dataset](#) · [Citation](#)
+[Paper](#) | [Project Page](#) | [Demo](#) | [Docs](#) | [Checkpoints](#) | [Dataset](#) | [Citation](#)
 
 ![Representative output](assets/figures/teaser.png)
 
@@ -33,6 +33,27 @@ Recommended order:
 ```
 
 Use badges sparingly. Good badges: license, tests, docs, package version, paper/arXiv, model hub. Avoid noisy badges that do not help users decide whether to use the repo.
+
+## High-Star README Patterns
+
+High-star repositories tend to converge on the same presentation structure:
+
+- centered hero with title, short claim, badges, and compact link hub
+- one strong image or GIF before long prose
+- very short "install + run" path near the top
+- feature cards or use-case cards for fast scanning
+- example gallery for visual products or model outputs
+- model/checkpoint/result tables for technical credibility
+- deeper docs linked instead of copied into the README
+
+For deep learning repositories, prefer this order:
+
+1. Hero: logo/title, one-sentence claim, badges, link hub.
+2. Visual proof: teaser image, demo GIF, qualitative grid, or architecture/result image.
+3. At-a-glance cards: task, model, datasets, best metric, runtime, checkpoints.
+4. Quickstart: install and one inference/demo command.
+5. Model/result cards: pretrained models, benchmark results, reproduction commands.
+6. Details: setup, data, training, evaluation, docs, citation, license.
 
 ## Visual README Requirements
 
@@ -60,6 +81,11 @@ GitHub README supports a safe subset of HTML. Use HTML tables for visually stabl
   <h1>Project Name</h1>
   <p><strong>Short model/task claim in one sentence.</strong></p>
   <p>
+    <a href="#"><img src="https://img.shields.io/badge/Paper-arXiv-b31b1b" alt="Paper"></a>
+    <a href="#"><img src="https://img.shields.io/badge/Docs-online-blue" alt="Docs"></a>
+    <a href="#"><img src="https://img.shields.io/badge/License-MIT-green" alt="License"></a>
+  </p>
+  <p>
     <a href="https://arxiv.org/abs/...">Paper</a> |
     <a href="https://project-page.example">Project Page</a> |
     <a href="docs/reproduction.md">Reproduce</a> |
@@ -70,6 +96,25 @@ GitHub README supports a safe subset of HTML. Use HTML tables for visually stabl
     <img src="assets/figures/teaser.png" alt="Qualitative results from Project Name" width="900">
   </p>
 </div>
+```
+
+### At-A-Glance Cards
+
+Use this near the top when a repo has concrete model/task metadata:
+
+```markdown
+<table>
+  <tr>
+    <td><strong>Task</strong><br>Object detection</td>
+    <td><strong>Model</strong><br>Transformer detector</td>
+    <td><strong>Datasets</strong><br>COCO, LVIS</td>
+  </tr>
+  <tr>
+    <td><strong>Best result</strong><br>52.1 box AP</td>
+    <td><strong>Checkpoints</strong><br>3 pretrained variants</td>
+    <td><strong>Runtime</strong><br>1x GPU inference path</td>
+  </tr>
+</table>
 ```
 
 ### Research Snapshot Cards
@@ -99,6 +144,25 @@ GitHub README supports a safe subset of HTML. Use HTML tables for visually stabl
 </table>
 ```
 
+### Example Gallery
+
+Use this when the model produces visual outputs or the repo has demo screenshots:
+
+```markdown
+<table>
+  <tr>
+    <td><img src="assets/figures/example-1.png" alt="Example output 1" width="280"></td>
+    <td><img src="assets/figures/example-2.png" alt="Example output 2" width="280"></td>
+    <td><img src="assets/figures/example-3.png" alt="Example output 3" width="280"></td>
+  </tr>
+  <tr>
+    <td align="center">Input</td>
+    <td align="center">Prediction</td>
+    <td align="center">Overlay</td>
+  </tr>
+</table>
+```
+
 ### Feature Cards
 
 ```markdown
@@ -122,13 +186,13 @@ Use compact cards when there are only a few checkpoints:
       <strong>Base Model</strong><br>
       Dataset: COCO<br>
       Metric: 42.0 mAP<br>
-      <a href="#">checkpoint</a> · <a href="configs/base.yaml">config</a>
+      <a href="#">checkpoint</a> | <a href="configs/base.yaml">config</a>
     </td>
     <td>
       <strong>Large Model</strong><br>
       Dataset: COCO<br>
       Metric: 45.8 mAP<br>
-      <a href="#">checkpoint</a> · <a href="configs/large.yaml">config</a>
+      <a href="#">checkpoint</a> | <a href="configs/large.yaml">config</a>
     </td>
   </tr>
 </table>
@@ -207,6 +271,8 @@ State tolerance and known nondeterminism.
 - Use one clear teaser, architecture diagram, or qualitative result near the top.
 - Prefer task/model cards for important facts instead of long prose.
 - Use a result card or table for headline metrics; do not bury metrics in paragraphs.
+- Add an example gallery when the project is visually inspectable.
+- Use badges for navigation/status, not decoration.
 - Keep images committed under `assets/figures/` when small; use external hosting or releases for large files.
 - Prefer short paragraphs, tables, and command blocks.
 - Keep heading levels consistent.

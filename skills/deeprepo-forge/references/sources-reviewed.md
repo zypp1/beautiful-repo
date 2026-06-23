@@ -17,6 +17,20 @@ Use this file to understand the evidence base behind the skill. The list is repr
 - TorchVision: https://github.com/pytorch/vision
 - CLIP: https://github.com/openai/CLIP
 
+## High-Star README Design Samples
+
+- LangChain: https://github.com/langchain-ai/langchain
+- Dify: https://github.com/langgenius/dify
+- Gradio: https://github.com/gradio-app/gradio
+- Streamlit: https://github.com/streamlit/streamlit
+- Next.js: https://github.com/vercel/next.js
+- Stable Diffusion WebUI: https://github.com/AUTOMATIC1111/stable-diffusion-webui
+- Ultralytics: https://github.com/ultralytics/ultralytics
+- Segment Anything: https://github.com/facebookresearch/segment-anything
+- MMDetection: https://github.com/open-mmlab/mmdetection
+
+Use these for presentation patterns: centered hero blocks, logo or output images, badges, compact link hubs, short install paths, demo screenshots/GIFs, feature cards, example galleries, model/result tables, and links to deeper docs. Do not copy content claims.
+
 ## Official Standards And Tooling Docs
 
 - PEP 8: https://peps.python.org/pep-0008/
@@ -33,6 +47,10 @@ Use this file to understand the evidence base behind the skill. The list is repr
 Do not copy any single repository wholesale. Use the common patterns:
 
 - clear first-screen README signal
+- visual hero with real product/model output
+- badge row and compact documentation link hub
+- feature cards or use-case cards for fast scanning
+- screenshots, qualitative result grids, or demo GIFs
 - quickstart before long documentation
 - stable train/eval/infer commands
 - configs tied to results

@@ -45,6 +45,8 @@ README_SECTIONS = [
 
 README_VISUAL_TOKENS = ["![", "<img", ".png", ".jpg", ".jpeg", ".gif", ".webp"]
 README_CARD_TOKENS = ["<table", "<td", "<div", "width=\"33%\"", "width=\"900\""]
+README_BADGE_TOKENS = ["img.shields.io", "badge.svg", "badge/", "badge?"]
+README_GALLERY_TOKENS = ["gallery", "examples", "screenshots", "demo gif", "qualitative"]
 README_LINK_TARGETS = [
     "paper",
     "project page",
@@ -213,11 +215,19 @@ def audit(root: Path) -> int:
     readme_sections = [section for section in README_SECTIONS if section in readme]
     readme_has_visual = any(token in readme for token in README_VISUAL_TOKENS)
     readme_has_cards = any(token in readme for token in README_CARD_TOKENS)
+    readme_has_badges = any(token in readme for token in README_BADGE_TOKENS)
+    readme_has_gallery = any(token in readme for token in README_GALLERY_TOKENS)
+    readme_has_centered_hero = "<div align=\"center\"" in readme or "<p align=\"center\"" in readme
     readme_has_links = readme.count("](") >= 3 or readme.count("<a ") >= 3
     readme_link_targets = [target for target in README_LINK_TARGETS if target in readme]
     readme_has_link_hub = len(readme_link_targets) >= 4
     readme_has_checkpoint_signal = any(token in readme for token in ["checkpoint", "pretrained", "model zoo", "weights"])
     readme_has_result_signal = any(token in readme for token in ["result", "benchmark", "metric", "miou", "map", "accuracy", "dice"])
+    quickstart_index = readme.find("quickstart")
+    installation_index = readme.find("installation")
+    readme_has_early_quickstart = quickstart_index != -1 and (
+        installation_index == -1 or quickstart_index <= installation_index + 2000
+    )
     python_files = iter_python_files(root)
     py_stats = {
         "syntax_errors": 0,
@@ -243,6 +253,10 @@ def audit(root: Path) -> int:
         ("README core sections", len(readme_sections) >= 5),
         ("README visual or link hub", readme_has_visual or readme_has_links),
         ("README card-style first screen", readme_has_cards and readme_has_visual),
+        ("README centered hero", readme_has_centered_hero),
+        ("README badges", readme_has_badges),
+        ("README gallery/examples signal", readme_has_gallery or readme_has_visual),
+        ("README early quickstart", readme_has_early_quickstart),
         ("README research link hub", readme_has_link_hub),
         ("README checkpoint/model signal", readme_has_checkpoint_signal),
         ("README result signal", readme_has_result_signal),
@@ -288,6 +302,10 @@ def audit(root: Path) -> int:
     print(f"- README sections: {', '.join(readme_sections) if readme_sections else 'none'}")
     print(f"- README visual signal: {'yes' if readme_has_visual else 'no'}")
     print(f"- README card signal: {'yes' if readme_has_cards else 'no'}")
+    print(f"- README centered hero: {'yes' if readme_has_centered_hero else 'no'}")
+    print(f"- README badges: {'yes' if readme_has_badges else 'no'}")
+    print(f"- README gallery/examples signal: {'yes' if readme_has_gallery else 'no'}")
+    print(f"- README early quickstart: {'yes' if readme_has_early_quickstart else 'no'}")
     print(f"- README link targets: {', '.join(readme_link_targets) if readme_link_targets else 'none'}")
     print(f"- README checkpoint/model signal: {'yes' if readme_has_checkpoint_signal else 'no'}")
     print(f"- README result signal: {'yes' if readme_has_result_signal else 'no'}")

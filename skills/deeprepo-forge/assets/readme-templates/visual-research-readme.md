@@ -2,8 +2,14 @@
   <h1>Project Name</h1>
   <p><strong>Short task/model claim in one sentence.</strong></p>
   <p>
+    <a href="#"><img src="https://img.shields.io/badge/Paper-arXiv-b31b1b" alt="Paper"></a>
+    <a href="#"><img src="https://img.shields.io/badge/Docs-online-blue" alt="Docs"></a>
+    <a href="#"><img src="https://img.shields.io/badge/License-MIT-green" alt="License"></a>
+  </p>
+  <p>
     <a href="https://arxiv.org/abs/...">Paper</a> |
     <a href="https://project-page.example">Project Page</a> |
+    <a href="#gallery">Gallery</a> |
     <a href="docs/reproduction.md">Reproduce</a> |
     <a href="#pretrained-models">Checkpoints</a> |
     <a href="#citation">Citation</a>
@@ -17,24 +23,14 @@
 
 <table>
   <tr>
-    <td><strong>Task</strong></td>
-    <td>Semantic segmentation / detection / restoration / classification</td>
+    <td><strong>Task</strong><br>Segmentation / detection / restoration / classification</td>
+    <td><strong>Model</strong><br>Backbone and method family</td>
+    <td><strong>Datasets</strong><br>Dataset names and splits</td>
   </tr>
   <tr>
-    <td><strong>Model</strong></td>
-    <td>Backbone and method family</td>
-  </tr>
-  <tr>
-    <td><strong>Datasets</strong></td>
-    <td>Dataset names and splits</td>
-  </tr>
-  <tr>
-    <td><strong>Best result</strong></td>
-    <td>Metric on the main benchmark</td>
-  </tr>
-  <tr>
-    <td><strong>Runtime</strong></td>
-    <td>Training/evaluation hardware assumptions</td>
+    <td><strong>Best result</strong><br>Main benchmark metric</td>
+    <td><strong>Checkpoints</strong><br>Pretrained variants available</td>
+    <td><strong>Runtime</strong><br>Training/evaluation assumptions</td>
   </tr>
 </table>
 
@@ -45,6 +41,21 @@
     <td width="33%"><strong>Reproducible</strong><br>Published configs and exact eval commands.</td>
     <td width="33%"><strong>Ready to use</strong><br>Pretrained checkpoints and inference script.</td>
     <td width="33%"><strong>Extensible</strong><br>Modular datasets, models, losses, and metrics.</td>
+  </tr>
+</table>
+
+## Gallery
+
+<table>
+  <tr>
+    <td><img src="assets/figures/example-1.png" alt="Example input" width="280"></td>
+    <td><img src="assets/figures/example-2.png" alt="Model prediction" width="280"></td>
+    <td><img src="assets/figures/example-3.png" alt="Prediction overlay" width="280"></td>
+  </tr>
+  <tr>
+    <td align="center">Input</td>
+    <td align="center">Prediction</td>
+    <td align="center">Overlay</td>
   </tr>
 </table>
 
@@ -67,13 +78,13 @@ python scripts/infer.py \
       <strong>Base Model</strong><br>
       Dataset: Dataset name<br>
       Metric: 0.00 main metric<br>
-      <a href="#">checkpoint</a> · <a href="configs/base.yaml">config</a>
+      <a href="#">checkpoint</a> | <a href="configs/base.yaml">config</a>
     </td>
     <td>
       <strong>Large Model</strong><br>
       Dataset: Dataset name<br>
       Metric: 0.00 main metric<br>
-      <a href="#">checkpoint</a> · <a href="configs/large.yaml">config</a>
+      <a href="#">checkpoint</a> | <a href="configs/large.yaml">config</a>
     </td>
   </tr>
 </table>
