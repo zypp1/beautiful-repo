@@ -7,6 +7,32 @@ description: Standardize deep learning and machine learning research repositorie
 
 Use this skill to turn a deep learning repository into a reproducible, readable, citation-ready research artifact without breaking existing experiments.
 
+## How To Use
+
+Call the skill by name and state the mode:
+
+```text
+Use $beautiful-repo to audit this PyTorch repository. Do not edit files yet.
+```
+
+```text
+Use $beautiful-repo to normalize this deep learning repository. Keep old train/eval commands compatible and make small reviewable commits.
+```
+
+```text
+Use $beautiful-repo to improve naming, docstrings, module boundaries, and README polish for this repository.
+```
+
+Use these modes:
+
+- Audit mode: inspect only, run the audit script when Python is available, classify the repo, and produce a prioritized migration plan.
+- Implementation mode: make scoped edits, preserve compatibility, add tests/docs, and validate with smoke checks.
+- README mode: improve the visual GitHub README, images, badges, quickstart, results, checkpoints, citation, and link hub.
+- Code style mode: improve directory/file/API naming, docstrings, function boundaries, imports, type hints, and side-effect boundaries.
+- Release mode: add or improve `CITATION.cff`, model cards, data cards, license notes, result tables, checkpoint instructions, and CI.
+
+When the user asks for "everything" or "standardize the repo", cover README, docs, structure, naming, docstrings, configs, entry points, tests, CI, packaging, release metadata, artifacts, and compatibility. Do not stop after only README or only code style.
+
 ## Beautiful Means
 
 Optimize for these outcomes, in order:
@@ -46,9 +72,26 @@ Optimize for these outcomes, in order:
    - `references/research-release-standard.md` for paper/research repositories.
    - `references/migration-playbook.md` before moving files or changing entry points.
    - `references/code-style-standard.md` before editing Python code internals, names, type hints, or module boundaries.
+   - `references/naming-standard.md` before renaming directories, files, public APIs, configs, experiments, CLI flags, or output paths.
    - `references/docstring-standard.md` before adding, auditing, or improving module/class/function docstrings.
    - `references/readme-standard.md` before writing or polishing README files.
    - `references/framework-notes.md` when framework-specific choices matter.
+
+## Coverage Checklist
+
+Always evaluate these areas before calling a repository normalized:
+
+- Repository shape: root files, `src/` package layout, `scripts/`, `configs/`, `tests/`, `docs/`, `examples/`, `assets/`.
+- Naming: directory names, Python file names, package names, public classes/functions, variables, constants, config names, experiment names, CLI flags, and output paths.
+- Entry points: train, eval, inference, export, data/weight download, and CLI help paths.
+- Configuration: defaults, experiment configs, path resolution, seeds, hardware assumptions, and reproducibility knobs.
+- Code internals: module boundaries, function size, imports, typing, docstrings, error messages, side effects, and dependency boundaries.
+- Deep learning contracts: tensor shapes, dtypes, devices, batch keys, metrics, checkpoints, randomness, distributed assumptions, and mixed precision behavior.
+- Documentation: visual README, install, quickstart, data prep, training, evaluation, inference, results, checkpoints, troubleshooting, citation, license, acknowledgements.
+- Release metadata: `CITATION.cff`, BibTeX, model card, data card, limitations, ethical/safety notes when relevant.
+- Quality gates: import tests, config tests, model forward tests, dataset smoke tests, metric sanity tests, lint/format/type checks, CI.
+- Artifact hygiene: `.gitignore`, large files, generated outputs, logs, cached datasets, checkpoints, and reproducible download instructions.
+- Compatibility: old commands, old import paths, published config names, checkpoint names, README links, notebooks, CI commands, and paper reproduction commands.
 
 ## Target Repository Shape
 
@@ -109,7 +152,7 @@ Keep large or generated paths out of git: `data/`, `datasets/`, `checkpoints/`, 
 4. Introduce stable entry points: `scripts/train.py`, `scripts/eval.py`, `scripts/infer.py`; keep wrappers around old commands when needed.
 5. Centralize configuration: move hard-coded hyperparameters and paths into `configs/` only after entry points are stable.
 6. Modularize code: separate data, models, losses, metrics, training loop, evaluation, inference, and utilities.
-7. Normalize code style: apply project-local formatting, add or improve public module/class/function docstrings, improve vague names, split oversized functions, and convert import-time side effects into explicit calls.
+7. Normalize code style: apply project-local formatting, normalize directory/file/API names, add or improve public module/class/function docstrings, improve vague names, split oversized functions, and convert import-time side effects into explicit calls.
 8. Add tests: start with import, config load, model forward, metric sanity, and dataset smoke tests using tiny synthetic data where possible.
 9. Polish README and docs: make the repository useful within the first screen, then add full reproduction and result details.
 10. Add CI: run lint, format check, tests, and import checks. Avoid GPU-only CI unless the repository already has GPU runners.
@@ -128,6 +171,7 @@ A normalized deep learning repo should have:
 - Tests that prove imports, config loading, model construction, one forward pass, and at least one metric path.
 - README sections for badges, visual project signal, installation, quickstart, reproduction, results, model/checkpoint table, citation, license, and acknowledgements.
 - README images and links point to real assets or are explicitly removed. Do not leave `href="#"`, fake checkpoint links, fake metrics, or placeholder screenshots in a finished README.
+- Directories, Python files, packages, public APIs, configs, experiments, CLI flags, and output paths follow a consistent naming convention or preserve a documented legacy convention.
 - Public modules, classes, and functions use consistent naming, type hints where practical, and docstrings that explain ownership, tensor shapes, units, devices, configs, checkpoints, and side effects.
 - Training, evaluation, and inference code avoids hidden import-time side effects, author-local absolute paths, and unstructured global state.
 - `CITATION.cff` and BibTeX for paper repositories.
@@ -141,6 +185,7 @@ When auditing, report:
 2. High-impact gaps ordered by reproducibility risk.
 3. Proposed target structure.
 4. A phased migration plan with small reviewable steps.
-5. Commands used for validation and their results.
+5. Coverage status for structure, naming, code style, docs, tests, CI, release metadata, artifacts, and compatibility.
+6. Commands used for validation and their results.
 
 When editing, finish with changed files, preserved compatibility notes, and validation performed. If a full training run was not performed, say so explicitly.

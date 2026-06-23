@@ -25,6 +25,8 @@ Avoid vague public names: `foo`, `bar`, `tmp`, `data`, `res`, `out`, `obj`, `thi
 
 Short mathematical names such as `x`, `y`, `z`, `q`, `k`, `v` are acceptable inside short tensor expressions when shape and meaning are obvious from context. Avoid them in public function signatures unless they mirror established framework APIs.
 
+Read `naming-standard.md` before doing a naming pass across directories, Python files, public APIs, configs, experiment names, CLI flags, or output artifacts. Treat public renames as migrations: search references, preserve old commands when needed, and keep rename-only changes separate from behavior changes.
+
 ## Function Boundaries
 
 Split functions when they mix responsibilities:

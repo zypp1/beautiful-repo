@@ -40,6 +40,7 @@ Use these for presentation patterns: centered hero blocks, logo or output images
 
 - PEP 8: https://peps.python.org/pep-0008/
 - PEP 257: https://peps.python.org/pep-0257/
+- Python tutorial on modules: https://docs.python.org/3/tutorial/modules.html
 - PyTorch docstring guidelines: https://github.com/pytorch/pytorch/wiki/Docstring-Guidelines
 - Google Python style guide docstrings: https://google.github.io/styleguide/pyguide.html#38-comments-and-docstrings
 - NumPy docstring guide: https://numpydoc.readthedocs.io/en/latest/format.html
@@ -66,6 +67,7 @@ Do not copy any single repository wholesale. Use the common patterns:
 - checkpoint and dataset tables
 - docs for setup, data, reproduction, and results
 - package-quality Python code
+- consistent directory, Python file, package, function, class, constant, config, and experiment naming
 - public module/class/function docstrings that document API contracts, not just names
 - tensor shapes, dtypes, devices, config keys, checkpoint compatibility, metrics, randomness, and side effects in deep learning docstrings
 - smoke tests and CI that do not require full datasets by default

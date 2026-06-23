@@ -148,6 +148,71 @@ def compute_iou(logits, target):
         self.assertEqual(stats["public_defs"], 2)
         self.assertEqual(stats["thin_docstrings"], 1)
 
+    def test_python_analysis_flags_public_api_naming(self) -> None:
+        module = load_module()
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "model.py"
+            path.write_text(
+                '''
+"""Model definitions."""
+
+BAD_CONST = 1
+
+
+class bad_model:
+    """Segmentation model used in naming tests."""
+
+    def BadForward(self):
+        return None
+
+
+def RunModel(images):
+    """Run model inference for an image tensor batch."""
+    return images
+''',
+                encoding="utf-8",
+            )
+
+            stats = module.analyze_python_file(path)
+
+        self.assertEqual(stats["bad_class_names"], 1)
+        self.assertEqual(stats["bad_function_names"], 1)
+        self.assertEqual(stats["bad_method_names"], 1)
+        self.assertEqual(stats["bad_constant_names"], 0)
+
+    def test_path_name_analysis_flags_directory_file_and_shadow_names(self) -> None:
+        module = load_module()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "BadDir").mkdir()
+            (root / "src").mkdir()
+            (root / "src" / "MyModel.py").write_text('"""Model file."""\n', encoding="utf-8")
+            (root / "src" / "torch.py").write_text('"""Shadow file."""\n', encoding="utf-8")
+            (root / "outputs" / "final").mkdir(parents=True)
+
+            stats = module.analyze_path_names(root)
+
+        self.assertEqual(stats["bad_dir_names"], 1)
+        self.assertEqual(stats["bad_python_file_names"], 1)
+        self.assertEqual(stats["shadow_python_file_names"], 1)
+        self.assertEqual(stats["scratch_path_names"], 1)
+
+    def test_test_files_do_not_count_public_api_naming(self) -> None:
+        module = load_module()
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "test_model.py"
+            path.write_text(
+                '''
+def TestForward():
+    assert True
+''',
+                encoding="utf-8",
+            )
+
+            stats = module.analyze_python_file(path)
+
+        self.assertEqual(stats["bad_function_names"], 0)
+
     def test_early_quickstart_requires_heading(self) -> None:
         module = load_module()
 

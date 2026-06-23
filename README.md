@@ -12,6 +12,7 @@
     <a href="skills/beautiful-repo/SKILL.md">Skill</a> |
     <a href="skills/beautiful-repo/references/readme-standard.md">README Standard</a> |
     <a href="skills/beautiful-repo/references/code-style-standard.md">Code Style</a> |
+    <a href="skills/beautiful-repo/references/naming-standard.md">Naming</a> |
     <a href="skills/beautiful-repo/assets/readme-templates/visual-research-readme.md">Visual Template</a> |
     <a href="skills/beautiful-repo/scripts/audit_dl_repo.py">Audit Script</a>
   </p>
@@ -72,6 +73,22 @@ For an implementation pass:
 Use $beautiful-repo to normalize this PyTorch repository. Keep old training commands compatible, add missing docs/tests/configs, polish the visual README, and validate with smoke checks.
 ```
 
+For a focused naming/docstring pass:
+
+```text
+Use $beautiful-repo to normalize directory names, Python file names, public API names, module docstrings, and function docstrings. Preserve published commands and import paths.
+```
+
+Useful modes:
+
+| Mode | Prompt intent |
+| --- | --- |
+| Audit | Inspect only; classify the repo and produce a prioritized migration plan. |
+| Implementation | Make scoped changes across structure, code, docs, tests, CI, and release metadata. |
+| README | Build a visual GitHub README with hero, badges, cards, gallery, quickstart, results, checkpoints, and citation. |
+| Code style | Normalize naming, docstrings, module boundaries, type hints, imports, and side effects. |
+| Release | Add citation, model/data cards, limitations, checkpoint instructions, and quality gates. |
+
 ## 🖼️ README Style It Enforces
 
 The bundled README standard pushes deep learning projects toward a richer, easier-to-scan style:
@@ -106,6 +123,7 @@ The bundled README standard pushes deep learning projects toward a richer, easie
         framework-notes.md
         high-impact-patterns.md
         migration-playbook.md
+        naming-standard.md
         readme-standard.md
         repo-type-playbooks.md
         research-release-standard.md
@@ -140,7 +158,7 @@ The bundled audit script can be run directly:
 python skills/beautiful-repo/scripts/audit_dl_repo.py /path/to/deep-learning-repo
 ```
 
-The script checks for common release-readiness signals such as README, license, citation metadata, configs, entry points, tests, docs, CI, public/module docstrings, and artifact ignore rules.
+The script checks for common release-readiness signals such as README, license, citation metadata, configs, entry points, tests, docs, CI, public/module docstrings, naming consistency, and artifact ignore rules.
 
 The output is a starting checklist, not a substitute for reading the repository.
 

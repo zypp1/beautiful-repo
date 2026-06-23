@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import ast
+import keyword
 import re
 from pathlib import Path
 
@@ -95,6 +96,33 @@ ARTIFACT_DIRS = [
 VAGUE_NAMES = {"foo", "bar", "tmp", "res", "obj", "thing"}
 IMPORT_TIME_CALLS = {"train", "evaluate", "download", "load_checkpoint", "fit"}
 SKIP_DIRS = {".git", ".venv", "venv", "__pycache__", "build", "dist"}
+PYTHON_SHADOW_MODULES = {
+    "argparse",
+    "collections",
+    "dataclasses",
+    "json",
+    "logging",
+    "math",
+    "numpy",
+    "pathlib",
+    "random",
+    "re",
+    "torch",
+    "typing",
+}
+BAD_SCRATCH_NAME_WORDS = {
+    "backup",
+    "debug",
+    "final",
+    "latest",
+    "misc",
+    "new",
+    "old",
+    "scratch",
+    "temp",
+    "testnew",
+    "tmp",
+}
 THIN_DOCSTRING_WORDS = {
     "calculate",
     "compute",
@@ -196,6 +224,78 @@ def iter_python_files(root: Path) -> list[Path]:
     return sorted(files)
 
 
+def iter_relevant_dirs(root: Path) -> list[Path]:
+    """Return repository directories that should participate in naming checks."""
+    dirs: list[Path] = []
+    for path in root.rglob("*"):
+        if not path.is_dir():
+            continue
+        if any(part in SKIP_DIRS for part in path.relative_to(root).parts):
+            continue
+        dirs.append(path)
+    return sorted(dirs)
+
+
+def is_snake_case(name: str) -> bool:
+    """Return whether a Python identifier uses lower snake_case."""
+    return bool(re.fullmatch(r"[a-z_][a-z0-9_]*", name)) and not keyword.iskeyword(name)
+
+
+def is_upper_snake_case(name: str) -> bool:
+    """Return whether a Python identifier uses UPPER_SNAKE_CASE."""
+    return bool(re.fullmatch(r"[A-Z_][A-Z0-9_]*", name))
+
+
+def is_capwords(name: str) -> bool:
+    """Return whether a class name follows CapWords closely enough for an audit."""
+    return bool(re.fullmatch(r"[A-Z][A-Za-z0-9]*", name)) and "_" not in name
+
+
+def is_kebab_or_snake_segment(name: str) -> bool:
+    """Return whether a non-package directory segment is readable and lowercase."""
+    return bool(re.fullmatch(r"[a-z0-9]+([_-][a-z0-9]+)*", name))
+
+
+def has_scratch_name(name: str) -> bool:
+    """Return whether a path segment looks like a scratch or local-only name."""
+    compact = re.sub(r"[^a-z0-9]+", "", name.lower())
+    words = set(re.split(r"[^a-z0-9]+", name.lower()))
+    return compact in BAD_SCRATCH_NAME_WORDS or bool(words & BAD_SCRATCH_NAME_WORDS)
+
+
+def analyze_path_names(root: Path) -> dict[str, int]:
+    """Analyze directory and Python file naming conventions."""
+    stats = {
+        "bad_dir_names": 0,
+        "bad_python_file_names": 0,
+        "shadow_python_file_names": 0,
+        "scratch_path_names": 0,
+    }
+
+    for path in iter_relevant_dirs(root):
+        rel_parts = path.relative_to(root).parts
+        name = path.name
+        if name == ".":
+            continue
+        if name.startswith("."):
+            continue
+        if not is_kebab_or_snake_segment(name):
+            stats["bad_dir_names"] += 1
+        if has_scratch_name(name):
+            stats["scratch_path_names"] += 1
+
+    for path in iter_python_files(root):
+        name = path.stem
+        if name != "__init__" and not is_snake_case(name):
+            stats["bad_python_file_names"] += 1
+        if name in PYTHON_SHADOW_MODULES:
+            stats["shadow_python_file_names"] += 1
+        if has_scratch_name(name):
+            stats["scratch_path_names"] += 1
+
+    return stats
+
+
 def normalize_identifier(text: str) -> str:
     """Normalize text for loose docstring/name comparisons."""
     return re.sub(r"[^a-z0-9]+", " ", text.lower()).strip()
@@ -234,7 +334,9 @@ def is_thin_docstring(name: str, docstring: str, has_signature_detail: bool) -> 
         return True
 
     if any(word in THIN_DOCSTRING_WORDS for word in words):
-        has_domain_signal = any(word in DL_CONTRACT_WORDS for word in normalize_identifier(docstring).split())
+        has_domain_signal = any(
+            word in DL_CONTRACT_WORDS for word in normalize_identifier(docstring).split()
+        )
         if not has_domain_signal and len(words) <= 8:
             return True
 
@@ -243,7 +345,9 @@ def is_thin_docstring(name: str, docstring: str, has_signature_detail: bool) -> 
         r"\b(todo|tbd|fixme)\b",
     ]
     normalized = docstring.lower()
-    return any(re.search(pattern, normalized, flags=re.MULTILINE) for pattern in placeholder_patterns)
+    return any(
+        re.search(pattern, normalized, flags=re.MULTILINE) for pattern in placeholder_patterns
+    )
 
 
 def is_test_file(path: Path) -> bool:
@@ -273,6 +377,10 @@ def analyze_python_file(path: Path) -> dict[str, int]:
             "thin_docstrings": 0,
             "typed_defs": 0,
             "vague_names": 0,
+            "bad_function_names": 0,
+            "bad_method_names": 0,
+            "bad_class_names": 0,
+            "bad_constant_names": 0,
             "import_time_calls": 0,
         }
 
@@ -284,6 +392,10 @@ def analyze_python_file(path: Path) -> dict[str, int]:
     thin_docstrings = 0
     typed_defs = 0
     vague_names = 0
+    bad_function_names = 0
+    bad_method_names = 0
+    bad_class_names = 0
+    bad_constant_names = 0
     import_time_calls = 0
 
     for node in tree.body:
@@ -294,6 +406,20 @@ def analyze_python_file(path: Path) -> dict[str, int]:
         if node.name.startswith("_"):
             continue
         public_defs += 1
+        if isinstance(node, ast.ClassDef):
+            if not is_capwords(node.name):
+                bad_class_names += 1
+            for item in node.body:
+                if not isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                    continue
+                if item.name.startswith("_"):
+                    continue
+                if not is_snake_case(item.name):
+                    bad_method_names += 1
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and not is_snake_case(
+            node.name
+        ):
+            bad_function_names += 1
         docstring = ast.get_docstring(node)
         if not docstring:
             missing_docstrings += 1
@@ -320,6 +446,13 @@ def analyze_python_file(path: Path) -> dict[str, int]:
                 typed_defs += 1
 
     if not is_test_file(path):
+        for node in tree.body:
+            if isinstance(node, (ast.Assign, ast.AnnAssign)):
+                targets = node.targets if isinstance(node, ast.Assign) else [node.target]
+                for target in targets:
+                    if isinstance(target, ast.Name) and target.id.isupper():
+                        if not is_upper_snake_case(target.id):
+                            bad_constant_names += 1
         for node in ast.walk(tree):
             if isinstance(node, ast.Name) and node.id in VAGUE_NAMES:
                 vague_names += 1
@@ -345,6 +478,10 @@ def analyze_python_file(path: Path) -> dict[str, int]:
         "thin_docstrings": thin_docstrings,
         "typed_defs": typed_defs,
         "vague_names": vague_names,
+        "bad_function_names": bad_function_names,
+        "bad_method_names": bad_method_names,
+        "bad_class_names": bad_class_names,
+        "bad_constant_names": bad_constant_names,
         "import_time_calls": import_time_calls,
     }
 
@@ -410,6 +547,10 @@ def audit(root: Path) -> int:
         "thin_docstrings": 0,
         "typed_defs": 0,
         "vague_names": 0,
+        "bad_function_names": 0,
+        "bad_method_names": 0,
+        "bad_class_names": 0,
+        "bad_constant_names": 0,
         "import_time_calls": 0,
     }
     for path in python_files:
@@ -429,6 +570,17 @@ def audit(root: Path) -> int:
     )
     thin_docstring_ratio = (
         py_stats["thin_docstrings"] / py_stats["public_defs"] if py_stats["public_defs"] else 0.0
+    )
+    path_name_stats = analyze_path_names(root)
+    naming_hits = (
+        path_name_stats["bad_dir_names"]
+        + path_name_stats["bad_python_file_names"]
+        + path_name_stats["shadow_python_file_names"]
+        + path_name_stats["scratch_path_names"]
+        + py_stats["bad_function_names"]
+        + py_stats["bad_method_names"]
+        + py_stats["bad_class_names"]
+        + py_stats["bad_constant_names"]
     )
 
     checks = [
@@ -460,6 +612,20 @@ def audit(root: Path) -> int:
         ("module docstrings", module_docstring_ratio >= 0.8),
         ("public API docstrings", docstring_ratio >= 0.5),
         ("limited thin docstrings", thin_docstring_ratio <= 0.2),
+        (
+            "directory and file naming",
+            path_name_stats["bad_dir_names"] == 0
+            and path_name_stats["bad_python_file_names"] == 0,
+        ),
+        ("no import-shadowing Python file names", path_name_stats["shadow_python_file_names"] == 0),
+        (
+            "public API naming",
+            py_stats["bad_function_names"] == 0
+            and py_stats["bad_method_names"] == 0
+            and py_stats["bad_class_names"] == 0
+            and py_stats["bad_constant_names"] == 0,
+        ),
+        ("limited scratch names", path_name_stats["scratch_path_names"] <= 1),
         ("limited vague names", py_stats["vague_names"] <= max(5, len(python_files))),
         ("limited import-time side effects", py_stats["import_time_calls"] == 0),
     ]
@@ -506,6 +672,15 @@ def audit(root: Path) -> int:
     print(f"- public definitions missing docstrings: {py_stats['missing_docstrings']}")
     print(f"- thin public docstrings: {py_stats['thin_docstrings']}")
     print(f"- typed public functions/classes: {py_stats['typed_defs']}")
+    print(f"- directories with nonstandard names: {path_name_stats['bad_dir_names']}")
+    print(f"- Python files with non-snake-case names: {path_name_stats['bad_python_file_names']}")
+    print(f"- Python files shadowing common modules: {path_name_stats['shadow_python_file_names']}")
+    print(f"- public functions with non-snake-case names: {py_stats['bad_function_names']}")
+    print(f"- public methods with non-snake-case names: {py_stats['bad_method_names']}")
+    print(f"- public classes with non-CapWords names: {py_stats['bad_class_names']}")
+    print(f"- public constants with non-UPPER-SNAKE names: {py_stats['bad_constant_names']}")
+    print(f"- scratch-like path names: {path_name_stats['scratch_path_names']}")
+    print(f"- total naming issue hints: {naming_hits}")
     print(f"- vague variable-name hits: {py_stats['vague_names']}")
     print(f"- possible import-time side-effect calls: {py_stats['import_time_calls']}")
     artifact_dirs = ", ".join(existing_artifacts) if existing_artifacts else "none"
