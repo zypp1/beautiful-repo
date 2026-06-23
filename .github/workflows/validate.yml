@@ -16,37 +16,37 @@ jobs:
 
       - name: Check required skill files
         run: |
-          test -f skills/beautiful-dl-repo/SKILL.md
-          test -f skills/beautiful-dl-repo/agents/openai.yaml
-          test -f skills/beautiful-dl-repo/scripts/audit_dl_repo.py
-          test -f skills/beautiful-dl-repo/assets/readme-templates/visual-research-readme.md
-          test -f assets/beautiful-dl-repo-kit.svg
-          test -f skills/beautiful-dl-repo/references/code-style-standard.md
-          test -f skills/beautiful-dl-repo/references/high-impact-patterns.md
-          test -f skills/beautiful-dl-repo/references/readme-standard.md
-          test -f skills/beautiful-dl-repo/references/repo-type-playbooks.md
-          test -f skills/beautiful-dl-repo/references/sources-reviewed.md
-          test -f skills/beautiful-dl-repo/references/research-release-standard.md
-          test -f skills/beautiful-dl-repo/references/migration-playbook.md
-          test -f skills/beautiful-dl-repo/references/framework-notes.md
+          test -f skills/beautiful-repo/SKILL.md
+          test -f skills/beautiful-repo/agents/openai.yaml
+          test -f skills/beautiful-repo/scripts/audit_dl_repo.py
+          test -f skills/beautiful-repo/assets/readme-templates/visual-research-readme.md
+          test -f assets/beautiful-repo.svg
+          test -f skills/beautiful-repo/references/code-style-standard.md
+          test -f skills/beautiful-repo/references/high-impact-patterns.md
+          test -f skills/beautiful-repo/references/readme-standard.md
+          test -f skills/beautiful-repo/references/repo-type-playbooks.md
+          test -f skills/beautiful-repo/references/sources-reviewed.md
+          test -f skills/beautiful-repo/references/research-release-standard.md
+          test -f skills/beautiful-repo/references/migration-playbook.md
+          test -f skills/beautiful-repo/references/framework-notes.md
 
       - name: Check skill metadata
         run: |
           python - <<'PY'
           from pathlib import Path
 
-          text = Path("skills/beautiful-dl-repo/SKILL.md").read_text(encoding="utf-8")
+          text = Path("skills/beautiful-repo/SKILL.md").read_text(encoding="utf-8")
           assert text.startswith("---\n"), "SKILL.md must start with YAML frontmatter"
           frontmatter = text.split("---", 2)[1]
-          assert "name: beautiful-dl-repo" in frontmatter
+          assert "name: beautiful-repo" in frontmatter
           assert "description:" in frontmatter
           PY
 
       - name: Compile audit script
-        run: python -m py_compile skills/beautiful-dl-repo/scripts/audit_dl_repo.py
+        run: python -m py_compile skills/beautiful-repo/scripts/audit_dl_repo.py
 
       - name: Run tests
         run: python -m unittest discover -s tests
 
       - name: Run audit script on this repository
-        run: python skills/beautiful-dl-repo/scripts/audit_dl_repo.py . || test $? -eq 1
+        run: python skills/beautiful-repo/scripts/audit_dl_repo.py . || test $? -eq 1

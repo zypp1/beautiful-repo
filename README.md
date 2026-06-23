@@ -1,25 +1,25 @@
 <div align="center">
-  <img src="assets/beautiful-dl-repo-kit.svg" alt="Beautiful DL Repo Kit banner" width="100%">
-  <h1>✨ Beautiful DL Repo Kit</h1>
+  <img src="assets/beautiful-repo.svg" alt="Beautiful Repo banner" width="100%">
+  <h1>✨ Beautiful Repo</h1>
   <p><strong>Turn deep learning repositories into visual, reproducible, citation-ready GitHub releases.</strong></p>
   <p>
-    <a href="skills/beautiful-dl-repo/SKILL.md"><img src="https://img.shields.io/badge/Codex%20Skill-beautiful--dl--repo-111827" alt="Codex Skill"></a>
-    <a href="skills/beautiful-dl-repo/references/readme-standard.md"><img src="https://img.shields.io/badge/README-rich%20visual%20standard-2563eb" alt="README rich visual standard"></a>
-    <a href="skills/beautiful-dl-repo/scripts/audit_dl_repo.py"><img src="https://img.shields.io/badge/Audit-script-0f766e" alt="Audit script"></a>
+    <a href="skills/beautiful-repo/SKILL.md"><img src="https://img.shields.io/badge/Codex%20Skill-beautiful--repo-111827" alt="Codex Skill"></a>
+    <a href="skills/beautiful-repo/references/readme-standard.md"><img src="https://img.shields.io/badge/README-rich%20visual%20standard-2563eb" alt="README rich visual standard"></a>
+    <a href="skills/beautiful-repo/scripts/audit_dl_repo.py"><img src="https://img.shields.io/badge/Audit-script-0f766e" alt="Audit script"></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-16a34a" alt="License"></a>
   </p>
   <p>
-    <a href="skills/beautiful-dl-repo/SKILL.md">Skill</a> |
-    <a href="skills/beautiful-dl-repo/references/readme-standard.md">README Standard</a> |
-    <a href="skills/beautiful-dl-repo/references/code-style-standard.md">Code Style</a> |
-    <a href="skills/beautiful-dl-repo/assets/readme-templates/visual-research-readme.md">Visual Template</a> |
-    <a href="skills/beautiful-dl-repo/scripts/audit_dl_repo.py">Audit Script</a>
+    <a href="skills/beautiful-repo/SKILL.md">Skill</a> |
+    <a href="skills/beautiful-repo/references/readme-standard.md">README Standard</a> |
+    <a href="skills/beautiful-repo/references/code-style-standard.md">Code Style</a> |
+    <a href="skills/beautiful-repo/assets/readme-templates/visual-research-readme.md">Visual Template</a> |
+    <a href="skills/beautiful-repo/scripts/audit_dl_repo.py">Audit Script</a>
   </p>
 </div>
 
 ## 🌟 What This Is
 
-**Beautiful DL Repo Kit** is a Codex skill for upgrading PyTorch, TensorFlow, JAX, Lightning, Hugging Face, MONAI, or custom training repositories into releases that people can understand, run, inspect, and cite.
+**Beautiful Repo** is a Codex skill for upgrading deep learning repositories into releases that people can understand, run, inspect, and cite.
 
 <table>
   <tr>
@@ -45,15 +45,15 @@
 Install the skill with any Codex-compatible skills installer that supports GitHub repositories:
 
 ```bash
-npx skills add <owner>/<repo> --skill beautiful-dl-repo
+npx skills add <owner>/<repo> --skill beautiful-repo
 ```
 
-If your installer uses a different command, point it at `skills/beautiful-dl-repo`.
+If your installer uses a different command, point it at `skills/beautiful-repo`.
 
 For a local checkout, copy the skill folder into your Codex skills directory:
 
 ```text
-skills/beautiful-dl-repo -> ~/.codex/skills/beautiful-dl-repo
+skills/beautiful-repo -> ~/.codex/skills/beautiful-repo
 ```
 
 Restart Codex after installation.
@@ -63,13 +63,13 @@ Restart Codex after installation.
 Ask Codex:
 
 ```text
-Use $beautiful-dl-repo to audit this deep learning repository and propose a migration plan.
+Use $beautiful-repo to audit this deep learning repository and propose a migration plan.
 ```
 
 For an implementation pass:
 
 ```text
-Use $beautiful-dl-repo to normalize this PyTorch repository. Keep old training commands compatible, add missing docs/tests/configs, polish the visual README, and validate with smoke checks.
+Use $beautiful-repo to normalize this PyTorch repository. Keep old training commands compatible, add missing docs/tests/configs, polish the visual README, and validate with smoke checks.
 ```
 
 ## 🖼️ README Style It Enforces
@@ -94,9 +94,9 @@ The bundled README standard pushes deep learning projects toward a richer, easie
 ```text
 .
   assets/
-    beautiful-dl-repo-kit.svg
+    beautiful-repo.svg
   skills/
-    beautiful-dl-repo/
+    beautiful-repo/
       SKILL.md
       agents/
         openai.yaml
@@ -129,14 +129,14 @@ It is most useful for research repositories where the expected output is not jus
 
 The standards were distilled from a representative sample of high-impact deep learning repositories and official project hygiene references, including Transformers, Diffusers, MMDetection, Detectron2, Segment Anything, timm, Ultralytics, nnU-Net, MONAI, PyTorch Lightning, TorchVision, CLIP, PEP 8, PEP 257, GitHub README/CITATION guidance, Ruff, pytest, and Python packaging guidance.
 
-The full source list is in `skills/beautiful-dl-repo/references/sources-reviewed.md`.
+The full source list is in `skills/beautiful-repo/references/sources-reviewed.md`.
 
 ## 🔍 Audit Script
 
 The bundled audit script can be run directly:
 
 ```bash
-python skills/beautiful-dl-repo/scripts/audit_dl_repo.py /path/to/deep-learning-repo
+python skills/beautiful-repo/scripts/audit_dl_repo.py /path/to/deep-learning-repo
 ```
 
 The script checks for common release-readiness signals such as README, license, citation metadata, configs, entry points, tests, docs, CI, and artifact ignore rules.
@@ -145,14 +145,14 @@ The output is a starting checklist, not a substitute for reading the repository.
 
 ## 📛 Name
 
-Recommended public name: **Beautiful DL Repo Kit**.
+Recommended public name: **Beautiful Repo**.
 
-Recommended repository slug: `beautiful-dl-repo-kit`.
+Recommended repository slug: `beautiful-repo`.
 
-The skill id remains `beautiful-dl-repo` so prompts stay short:
+The skill id is `beautiful-repo`, so prompts stay short:
 
 ```text
-Use $beautiful-dl-repo to polish this deep learning repo.
+Use $beautiful-repo to polish this deep learning repo.
 ```
 
 ## 📄 License

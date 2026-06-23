@@ -1,7 +1,7 @@
 [project]
-name = "beautiful-dl-repo-kit"
+name = "beautiful-repo"
 version = "0.1.0"
-description = "Codex skill kit for making deep learning research repositories visual, reproducible, and citation-ready."
+description = "Codex skill for making deep learning repositories visual, reproducible, and citation-ready."
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }

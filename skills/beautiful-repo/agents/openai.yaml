@@ -1,0 +1,4 @@
+interface:
+  display_name: "Beautiful Repo"
+  short_description: "Make deep learning repositories visual, reproducible, and citation-ready."
+  default_prompt: "Use $beautiful-repo to audit and polish this deep learning repository into a visual, reproducible research release."
