@@ -20,7 +20,7 @@
   <circle cx="89" cy="375" r="150" fill="#A7F3D0" opacity="0.16"/>
 
   <g transform="translate(70 62)">
-    <text x="0" y="0" fill="#DBEAFE" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="700">✨ CODEX SKILL</text>
+    <text x="0" y="0" fill="#DBEAFE" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="700">✨ AGENT SKILL</text>
     <text x="0" y="58" fill="#FFFFFF" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="56" font-weight="800">Beautiful Repo</text>
     <text x="2" y="104" fill="#D1FAE5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="25" font-weight="600">Turn messy deep learning repos into polished, reproducible releases.</text>
   </g>

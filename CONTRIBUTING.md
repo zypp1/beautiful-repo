@@ -1,6 +1,6 @@
 # Contributing
 
-Keep this repository focused on one job: helping Codex standardize deep learning research repositories.
+Keep this repository focused on one job: helping agents standardize deep learning research repositories.
 
 ## Guidelines
 

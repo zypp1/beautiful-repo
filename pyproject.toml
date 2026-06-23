@@ -1,7 +1,7 @@
 [project]
 name = "beautiful-repo"
 version = "0.1.0"
-description = "Codex skill for making deep learning repositories visual, reproducible, and citation-ready."
+description = "Reusable agent skill for making deep learning repositories visual, reproducible, and citation-ready."
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }

@@ -3,7 +3,7 @@
   <h1>✨ Beautiful Repo</h1>
   <p><strong>Turn deep learning repositories into visual, reproducible, citation-ready GitHub releases.</strong></p>
   <p>
-    <a href="skills/beautiful-repo/SKILL.md"><img src="https://img.shields.io/badge/Codex%20Skill-beautiful--repo-111827" alt="Codex Skill"></a>
+    <a href="skills/beautiful-repo/SKILL.md"><img src="https://img.shields.io/badge/Agent%20Skill-beautiful--repo-111827" alt="Agent Skill"></a>
     <a href="skills/beautiful-repo/references/readme-standard.md"><img src="https://img.shields.io/badge/README-rich%20visual%20standard-2563eb" alt="README rich visual standard"></a>
     <a href="skills/beautiful-repo/scripts/audit_dl_repo.py"><img src="https://img.shields.io/badge/Audit-script-0f766e" alt="Audit script"></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-16a34a" alt="License"></a>
@@ -19,7 +19,7 @@
 
 ## 🌟 What This Is
 
-**Beautiful Repo** is a Codex skill for upgrading deep learning repositories into releases that people can understand, run, inspect, and cite.
+**Beautiful Repo** is a reusable agent skill for upgrading deep learning repositories into releases that people can understand, run, inspect, and cite.
 
 <table>
   <tr>
@@ -29,7 +29,7 @@
   </tr>
 </table>
 
-## 🧭 What It Helps Codex Fix
+## 🧭 What It Helps Agents Fix
 
 | Area | What gets normalized |
 | --- | --- |
@@ -42,7 +42,7 @@
 
 ## 🚀 Install
 
-Install the skill with any Codex-compatible skills installer that supports GitHub repositories:
+Install the skill with any compatible skill installer that supports GitHub repositories:
 
 ```bash
 npx skills add <owner>/<repo> --skill beautiful-repo
@@ -50,17 +50,17 @@ npx skills add <owner>/<repo> --skill beautiful-repo
 
 If your installer uses a different command, point it at `skills/beautiful-repo`.
 
-For a local checkout, copy the skill folder into your Codex skills directory:
+For a local checkout, copy the skill folder into your agent's skills directory:
 
 ```text
-skills/beautiful-repo -> ~/.codex/skills/beautiful-repo
+skills/beautiful-repo -> <skills-dir>/beautiful-repo
 ```
 
-Restart Codex after installation.
+Use the skills directory expected by your agent runtime. Restart it after installation if it caches skill metadata.
 
 ## ⚡ Use
 
-Ask Codex:
+Ask your agent:
 
 ```text
 Use $beautiful-repo to audit this deep learning repository and propose a migration plan.
@@ -123,7 +123,7 @@ The bundled README standard pushes deep learning projects toward a richer, easie
 
 ## 🧪 What The Skill Optimizes For
 
-The skill is intentionally conservative. It tells Codex to preserve existing behavior, avoid full training runs unless requested, and migrate a repository in small reviewable steps.
+The skill is intentionally conservative. It tells the agent to preserve existing behavior, avoid full training runs unless requested, and migrate a repository in small reviewable steps.
 
 It is most useful for research repositories where the expected output is not just clean code, but a reproducible artifact that another researcher can install, run, evaluate, and cite.
 
