@@ -1,7 +1,7 @@
 [project]
-name = "deeprepo-forge-skill"
+name = "beautiful-dl-repo-skill"
 version = "0.1.0"
-description = "Codex skill for forging deep learning research repositories into reproducible, citation-ready releases."
+description = "Codex skill for making deep learning research repositories beautiful, reproducible, and citation-ready."
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }

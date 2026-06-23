@@ -4,7 +4,7 @@ Keep this repository focused on one job: helping Codex standardize deep learning
 
 ## Guidelines
 
-- Keep `skills/deeprepo-forge/SKILL.md` concise and procedural.
+- Keep `skills/beautiful-dl-repo/SKILL.md` concise and procedural.
 - Put longer standards or framework-specific guidance in `references/`.
 - Keep scripts deterministic and safe by default.
 - When adding new standards, name the source repositories or official documents that motivated them.
@@ -14,6 +14,6 @@ Keep this repository focused on one job: helping Codex standardize deep learning
 ## Local Validation
 
 ```bash
-python -m py_compile skills/deeprepo-forge/scripts/audit_dl_repo.py
-python skills/deeprepo-forge/scripts/audit_dl_repo.py .
+python -m py_compile skills/beautiful-dl-repo/scripts/audit_dl_repo.py
+python skills/beautiful-dl-repo/scripts/audit_dl_repo.py .
 ```
