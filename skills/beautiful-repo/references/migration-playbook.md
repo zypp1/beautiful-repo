@@ -89,6 +89,8 @@ Run the cheapest meaningful checks:
 
 For GPU projects, add CPU smoke tests where possible and document GPU-only paths separately.
 
+Keep CI proportional. In small repositories, do not make every push install full training dependencies or run the whole audit suite. Use cheap push smoke checks, and move heavier verification to pull requests, manual workflows, scheduled runs, or release preparation.
+
 ## Step 7: Document The New Contract
 
 Update:

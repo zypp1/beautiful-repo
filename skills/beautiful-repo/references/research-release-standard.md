@@ -80,6 +80,8 @@ Prioritize tests that catch broken releases:
 
 Do not require full datasets or GPUs for default CI tests unless unavoidable.
 
+For tiny or small releases, keep push CI cheap: metadata checks, Python syntax, import smoke tests, and maybe the fastest unit tests. Run heavier checks, dependency installs, model-forward smoke tests, and audit scripts on pull requests, scheduled jobs, manual dispatch, or before tagging a release.
+
 ## Release Metadata
 
 Add `CITATION.cff` for repositories intended to be cited. Include title, authors, release date, version, repository URL, DOI when available, and preferred citation.

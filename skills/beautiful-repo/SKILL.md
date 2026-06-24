@@ -110,7 +110,7 @@ Always evaluate these areas before calling a repository normalized:
 - Deep learning contracts: tensor shapes, dtypes, devices, batch keys, metrics, checkpoints, randomness, distributed assumptions, and mixed precision behavior.
 - Documentation: minimal README install, quickstart, data prep, train/eval/infer commands, results/checkpoints when relevant, and license. Full docs are optional for normal repositories.
 - Release metadata: optional by default; add `CITATION.cff`, BibTeX, model card, data card, limitations, and ethical/safety notes for paper/model releases or explicit user requests.
-- Quality gates: import tests, config tests, model forward tests, dataset smoke tests, metric sanity tests, lint/format/type checks, CI.
+- Quality gates: scale CI to the repository. Tiny/small repos should default to cheap push checks plus fuller PR/manual validation; larger libraries/model zoos can justify lint, format, import tests, config tests, model-forward tests, dataset smoke tests, and type checks in CI.
 - Artifact hygiene: `.gitignore`, large files, generated outputs, logs, cached datasets, checkpoints, and reproducible download instructions.
 - Compatibility: old commands, old import paths, published config names, checkpoint names, README links, notebooks, CI commands, and paper reproduction commands.
 
@@ -122,7 +122,7 @@ Do not force one layout onto every repository. Match the smallest structure that
 - Small inference demo: `README.md`, `scripts/infer.py`, sample assets, checkpoint/model hub links, minimal tests, optional package only if code is reused.
 - Medium research codebase: `src/<package>/`, `configs/experiments/`, `scripts/`, `tests/`, examples, minimal README, optional release metadata.
 - Method/library: `src/<package>/`, API examples, tests, packaging metadata, concise public docstrings, compatibility notes.
-- Model zoo/benchmark: config tree, tools/scripts, checkpoint/result tables, model index when the ecosystem uses one, CI and tests.
+- Model zoo/benchmark: config tree, tools/scripts, checkpoint/result tables, model index when the ecosystem uses one, CI and tests sized to the project.
 - Production ML: package/service boundaries, deployment smoke tests, request/response examples, operational limits.
 
 Use this general shape only after the profile justifies it:
@@ -179,7 +179,7 @@ Keep large or generated paths out of git: `data/`, `datasets/`, `checkpoints/`, 
 7. Normalize code style: apply project-local formatting, normalize directory/file/API names, add or improve public module/class/function docstrings, improve vague names, split oversized functions, and convert import-time side effects into explicit calls.
 8. Add tests: start with import, config load, model forward, metric sanity, and dataset smoke tests using tiny synthetic data where possible.
 9. Polish README enough for use: first-screen purpose, install, quickstart, data, train/eval/infer, results/checkpoints when relevant. Add full docs only for paper/model releases or explicit user requests.
-10. Add CI: run lint, format check, tests, and import checks. Avoid GPU-only CI unless the repository already has GPU runners.
+10. Add CI only at the weight the repo deserves. For tiny/small repos, push should run file/metadata checks and syntax/import smoke tests only; run full tests on pull requests or manual dispatch. Add lint, format, type checks, dataset/model smoke tests, and matrix jobs only when the repository size and user surface justify the cost. Avoid GPU-only CI unless the repository already has GPU runners.
 11. Add release metadata only when relevant: `CITATION.cff`, model card, data card, checkpoint download instructions, BibTeX, and reproducibility notes for paper/model releases.
 
 ## Minimum Done Criteria
@@ -193,6 +193,7 @@ A normalized deep learning repo should have:
 - Clear dataset acquisition/preparation instructions, including expected directory layout.
 - Clear checkpoint/weight download instructions and checksum/version notes when available.
 - Tests that prove imports, config loading, model construction, one forward pass, and at least one metric path.
+- CI, if added, is cheap on push and does not install heavyweight training dependencies for small repos unless the user explicitly wants that gate.
 - README sections for purpose, installation, quickstart, data, train/eval/infer commands, results/checkpoints when relevant, and license.
 - README images and links point to real assets or are explicitly removed. Do not leave `href="#"`, fake checkpoint links, fake metrics, or placeholder screenshots in a finished README.
 - Directories, Python files, packages, public APIs, configs, experiments, CLI flags, and output paths follow a consistent naming convention or preserve a documented legacy convention.

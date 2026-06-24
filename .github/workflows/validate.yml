@@ -3,6 +3,7 @@ name: validate
 on:
   push:
   pull_request:
+  workflow_dispatch:
 
 jobs:
   validate:
@@ -10,7 +11,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Pushes stay cheap: no dependency install and no full test/audit run.
       - uses: actions/setup-python@v5
+        if: github.event_name != 'push'
         with:
           python-version: "3.11"
 
@@ -42,11 +45,20 @@ jobs:
           assert "description:" in frontmatter
           PY
 
-      - name: Compile audit script
-        run: python -m py_compile skills/beautiful-repo/scripts/audit_dl_repo.py
+      - name: Check audit script syntax
+        run: |
+          python - <<'PY'
+          import ast
+          from pathlib import Path
+
+          path = Path("skills/beautiful-repo/scripts/audit_dl_repo.py")
+          ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+          PY
 
       - name: Run tests
+        if: github.event_name != 'push'
         run: python -m unittest discover -s tests
 
       - name: Run audit script on this repository
+        if: github.event_name != 'push'
         run: python skills/beautiful-repo/scripts/audit_dl_repo.py . || test $? -eq 1

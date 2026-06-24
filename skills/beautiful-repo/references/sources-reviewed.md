@@ -70,7 +70,7 @@ Do not copy any single repository wholesale. Use the common patterns:
 - consistent directory, Python file, package, function, class, constant, config, and experiment naming
 - public module/class/function docstrings that document API contracts, not just names
 - tensor shapes, dtypes, devices, config keys, checkpoint compatibility, metrics, randomness, and side effects in deep learning docstrings
-- smoke tests and CI that do not require full datasets by default
+- smoke tests and CI that do not require full datasets or heavyweight installs by default
 - citation, license, and contribution metadata
 
 ## Adaptive Structure Notes

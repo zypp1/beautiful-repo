@@ -50,7 +50,7 @@ Do not blindly copy:
 - Badge walls, logos, or animations that push install/use instructions below the fold.
 - Decorative images that do not reveal the model, product, task, dataset, or result.
 - Cards that repeat claims but omit install, checkpoints, metrics, or reproduction paths.
-- CI that requires private datasets, GPUs, or unavailable secrets.
+- CI that requires private datasets, GPUs, unavailable secrets, or heavyweight installs on every small-repo push.
 - Notebook-only workflows.
 - Research claims without the exact command, checkpoint, dataset split, and metric implementation needed to verify them.
 
