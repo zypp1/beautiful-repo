@@ -20,7 +20,7 @@
 
 ## 🌟 What This Is
 
-**Beautiful Repo** is a reusable agent skill for upgrading deep learning repositories into releases that people can understand, run, inspect, and cite.
+**Beautiful Repo** is a reusable agent skill for upgrading deep learning repositories into projects that people can understand, run, inspect, and cite when citation is relevant. It profiles the repository first, then chooses a structure that fits the repo's scale and purpose.
 
 <table>
   <tr>
@@ -36,7 +36,7 @@
 | --- | --- |
 | 🗂️ Repository shape | Practical layout, configs, scripts, tests, optional docs, and release metadata when needed. |
 | 🚀 Entry points | Stable `train.py`, `eval.py`, `infer.py`, and smoke-test commands. |
-| 🎨 README | Minimal install/quickstart/run path by default; visual polish for public releases. |
+| 🎨 README | Minimal install/quickstart/run path by default; real arXiv/Bilibili/demo/model/data/checkpoint links when available. |
 | 🧠 Code style | Clear names, docstrings, tensor shapes, type hints, function boundaries, and side effects. |
 | 📦 Research artifacts | Optional model cards, data cards, `CITATION.cff`, BibTeX, limitations, and acknowledgements. |
 | ✅ Quality gates | Import checks, config checks, one-batch tests, CI, and artifact ignore rules. |
@@ -91,7 +91,7 @@ Useful modes:
 
 ## 🖼️ README Style It Enforces
 
-The bundled README standard pushes deep learning projects toward a richer, easier-to-scan style:
+The bundled README standard pushes deep learning projects toward a richer, easier-to-scan style without using local docs links as filler:
 
 <table>
   <tr>
@@ -100,7 +100,7 @@ The bundled README standard pushes deep learning projects toward a richer, easie
     <td><strong>🧾 Compact facts</strong><br>Task, model, datasets, metrics, checkpoints, runtime, and hardware cards.</td>
   </tr>
   <tr>
-    <td><strong>🚀 Fast path</strong><br>Install plus one command before long documentation.</td>
+    <td><strong>🚀 Fast path</strong><br>Install plus one command before long release detail.</td>
     <td><strong>🏆 Credibility</strong><br>Checkpoint/model tables, result tables, and exact eval commands.</td>
     <td><strong>📚 Research hygiene</strong><br>Reproduction, data, model card, citation, license, and limitations.</td>
   </tr>
@@ -142,7 +142,7 @@ The bundled README standard pushes deep learning projects toward a richer, easie
 
 ## 🧪 What The Skill Optimizes For
 
-The skill is intentionally conservative. It tells the agent to preserve existing behavior, avoid full training runs unless requested, and migrate a repository in small reviewable steps.
+The skill is intentionally conservative. It tells the agent to profile repo size/content first, preserve existing behavior, avoid full training runs unless requested, and migrate a repository in small reviewable steps.
 
 It is most useful for deep learning repositories where the expected output is runnable, maintainable code first. Public release documentation is optional unless the project is a paper/model release or the user explicitly asks for it.
 
@@ -158,7 +158,7 @@ The bundled audit script can be run directly:
 python skills/beautiful-repo/scripts/audit_dl_repo.py /path/to/deep-learning-repo
 ```
 
-The script checks common core-readiness signals such as README, license, configs, entry points, tests, CI, public/module docstrings, naming consistency, and artifact ignore rules. Docs, citation metadata, and rich README polish are reported as optional release signals.
+The script checks common core-readiness signals such as repository scale, likely repo type, framework signals, recommended structure, README, license, configs, entry points, tests, CI, public/module docstrings, naming consistency, and artifact ignore rules. Docs, citation metadata, and rich README polish are reported as optional release signals.
 
 The output is a starting checklist, not a substitute for reading the repository.
 

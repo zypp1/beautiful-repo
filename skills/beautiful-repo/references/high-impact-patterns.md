@@ -19,7 +19,7 @@ This skill is based on a representative comparison of high-impact deep learning 
 
 Adopt these patterns when they fit the target repository:
 
-- First screen: centered project identity, short value proposition, badge row, paper/project/demo/docs links, and one real visual that shows model/task output.
+- First screen: centered project identity, short value proposition, badge row, real paper/project/demo/model/data/checkpoint links, and one real visual that shows model/task output.
 - Fast path: install command plus a minimal inference or smoke-test command that users can run quickly.
 - Full path: separate training, evaluation, inference, export, and reproduction commands.
 - Artifact path: documented dataset layout, checkpoint table, pretrained weight download, and result table.
@@ -35,9 +35,9 @@ Apply these visual patterns when polishing a README:
 - Show, then explain. Put a teaser image, result grid, product screenshot, architecture figure, or demo GIF above installation.
 - Use cards for scanning. Use HTML tables to create stable GitHub-rendered cards for features, tasks, datasets, model variants, and results.
 - Put a short Quickstart early. A copy-paste install plus one inference/demo command should appear before long setup notes.
-- Separate "try it" from "reproduce it." Quickstart should be short; paper reproduction should link to `docs/reproduction.md`.
+- Separate "try it" from "reproduce it." Quickstart should be short; paper reproduction belongs in a README section or a substantial reproduction document only when that file already carries real detail.
 - Use visual proof carefully. Screenshots and result images must reflect real outputs, not decorative stock images or invented metrics.
-- Route deep content away from the README. Long dataset instructions, benchmarks, API details, and ablations belong in `docs/`.
+- Route deep content away from the first screen. Long dataset instructions, benchmarks, API details, and ablations belong in later README sections or substantial local docs when the repository already has them.
 - Make model access obvious. Checkpoint cards/tables should include config, dataset, metric, and download link.
 - Keep social/community links compact. Discord, discussions, docs, examples, and issues are useful; a badge wall is not.
 

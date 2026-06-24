@@ -1,16 +1,21 @@
 <div align="center">
-  <h1>✨ Project Name</h1>
+  <h1>Project Name</h1>
   <p><strong>Short task/model claim in one sentence.</strong></p>
   <p>
     <a href="REPLACE_OR_REMOVE"><img src="https://img.shields.io/badge/Paper-arXiv-b31b1b" alt="Paper"></a>
-    <a href="REPLACE_OR_REMOVE"><img src="https://img.shields.io/badge/Docs-online-blue" alt="Docs"></a>
+    <a href="REPLACE_OR_REMOVE"><img src="https://img.shields.io/badge/Bilibili-demo-00a1d6" alt="Bilibili demo"></a>
+    <a href="REPLACE_OR_REMOVE"><img src="https://img.shields.io/badge/HuggingFace-model-ffcc4d" alt="Hugging Face model"></a>
     <a href="#license"><img src="https://img.shields.io/badge/License-MIT-green" alt="License"></a>
   </p>
   <p>
     <a href="REPLACE_OR_REMOVE">Paper</a> |
+    <a href="REPLACE_OR_REMOVE">arXiv</a> |
     <a href="REPLACE_OR_REMOVE">Project Page</a> |
+    <a href="REPLACE_OR_REMOVE">Bilibili</a> |
+    <a href="REPLACE_OR_REMOVE">Hugging Face</a> |
+    <a href="REPLACE_OR_REMOVE">ModelScope</a> |
     <a href="#gallery">Gallery</a> |
-    <a href="docs/reproduction.md">Reproduce</a> |
+    <a href="#reproducing-results">Reproduce</a> |
     <a href="#pretrained-models">Checkpoints</a> |
     <a href="#citation">Citation</a>
   </p>
@@ -21,7 +26,7 @@
 
 > Before release: replace or remove every `REPLACE_OR_REMOVE`, missing image path, fake metric, and unavailable checkpoint link.
 
-## 🧭 Snapshot
+## Snapshot
 
 <table>
   <tr>
@@ -36,7 +41,7 @@
   </tr>
 </table>
 
-## ✨ Highlights
+## Highlights
 
 <table>
   <tr>
@@ -46,7 +51,7 @@
   </tr>
 </table>
 
-## 🖼️ Gallery
+## Gallery
 
 <table>
   <tr>
@@ -61,7 +66,7 @@
   </tr>
 </table>
 
-## 🚀 Quickstart
+## Quickstart
 
 ```bash
 python -m pip install -e ".[dev]"
@@ -72,7 +77,7 @@ python scripts/infer.py \
   --output outputs/demo
 ```
 
-## 📦 Pretrained Models
+## Pretrained Models
 
 <table>
   <tr>
@@ -91,22 +96,13 @@ python scripts/infer.py \
   </tr>
 </table>
 
-## 🧪 Reproducing Results
+## Reproducing Results
 
 | Setting | Config | Checkpoint | Command | Metric | Expected |
 | --- | --- | --- | --- | --- | --- |
 | Main result | `configs/main.yaml` | `model.pt` | `python scripts/eval.py --config configs/main.yaml --checkpoint model.pt` | Metric | 0.00 |
 
-## 📚 Docs
-
-| Topic | Link |
-| --- | --- |
-| Installation | `docs/setup.md` |
-| Data preparation | `docs/data.md` |
-| Reproduction | `docs/reproduction.md` |
-| Model card | `docs/model_card.md` |
-
-## 🙏 Citation
+## Citation
 
 If this repository helps your research, please cite:
 

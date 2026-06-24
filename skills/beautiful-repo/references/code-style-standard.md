@@ -10,6 +10,19 @@ Use this reference before editing Python code internals, names, docstrings, type
 - Add types and docstrings to public modules and APIs first: datasets, models, losses, metrics, trainers, evaluators, config loaders, and CLI entry functions.
 - Do not change mathematical expressions, tensor layouts, default hyperparameters, or random seed behavior during pure style cleanup.
 
+## Senior-Engineer Bar
+
+Optimize for code another strong maintainer can safely change:
+
+- Make module ownership obvious: data loading, model construction, checkpoint I/O, training, evaluation, inference, metrics, and visualization should have separate boundaries once they are reused.
+- Prefer direct functions and small objects over registries, factories, plugin systems, or framework rewrites until the repository has real variants that need them.
+- Keep entry scripts thin: parse args, load config, call package code, handle exit status.
+- Validate external inputs at the boundary: paths, config keys, checkpoint schema, dataset layout, tensor shape, dtype, and device.
+- Raise actionable errors with the failing path/key/shape and the expected contract.
+- Avoid hidden global state for config, device, seed, logger, dataset roots, checkpoint paths, and output directories.
+- Preserve public commands and import paths during cleanup. If a rename is necessary, add a wrapper or migration note.
+- Treat style-only passes as behavior-preserving. Do not mix them with metric, loss, model, or training-loop changes.
+
 ## Naming
 
 Use names that reveal domain role:
@@ -61,7 +74,7 @@ Read `docstring-standard.md` before doing a docstring pass. It defines module-le
 
 Every public Python module should start with a file-level docstring that states what the file owns. For scripts, the top docstring should also name the CLI behavior and side effects. Avoid vague summaries such as `"""Utilities."""`; state the task, data contract, and important side effects when known.
 
-Keep module and function docstrings short. Prefer a one-line summary plus compact tensor/config details. Move tutorials, long examples, derivations, and background text to README or docs.
+Keep module and function docstrings short. Prefer a one-line summary plus compact tensor/config details. Move tutorials, long examples, derivations, and background text out of code.
 
 For deep learning code, useful docstrings include:
 

@@ -47,14 +47,26 @@ README_CARD_TOKENS = ["<table", "<td", "<div", "width=\"33%\"", "width=\"900\""]
 README_BADGE_TOKENS = ["img.shields.io", "badge.svg", "badge/", "badge?"]
 README_GALLERY_TOKENS = ["gallery", "examples", "screenshots", "demo gif", "qualitative"]
 README_LINK_TARGETS = [
+    "arxiv",
+    "bilibili",
     "paper",
     "project page",
     "demo",
-    "docs",
     "checkpoints",
     "dataset",
     "citation",
 ]
+README_EXTERNAL_LINK_PATTERNS = {
+    "arxiv": ["arxiv.org"],
+    "bilibili": ["bilibili.com"],
+    "hugging_face": ["huggingface.co"],
+    "modelscope": ["modelscope.cn"],
+    "project_page": ["github.io", "pages.dev", "vercel.app", "project page"],
+    "demo": ["gradio", "spaces", "demo", "colab", "kaggle.com"],
+    "paper": ["openreview.net", "doi.org", "aclweb.org", "proceedings.mlr.press"],
+    "dataset": ["dataset", "kaggle.com", "zenodo.org"],
+    "checkpoint": ["checkpoint", "pretrained", "weights", "drive.google.com"],
+}
 README_DEAD_PLACEHOLDERS = [
     "replace_or_remove",
     'href="#"',
@@ -92,7 +104,40 @@ ARTIFACT_DIRS = [
 
 VAGUE_NAMES = {"foo", "bar", "tmp", "res", "obj", "thing"}
 IMPORT_TIME_CALLS = {"train", "evaluate", "download", "load_checkpoint", "fit"}
-SKIP_DIRS = {".git", ".venv", "venv", "__pycache__", "build", "dist"}
+SKIP_DIRS = {
+    ".git",
+    ".mypy_cache",
+    ".pytest_cache",
+    ".ruff_cache",
+    ".uv-cache",
+    ".venv",
+    "__pycache__",
+    "build",
+    "dist",
+    "venv",
+}
+REPO_FILE_SKIP_DIRS = SKIP_DIRS | {
+    "data",
+    "datasets",
+    "checkpoints",
+    "weights",
+    "runs",
+    "wandb",
+    "mlruns",
+    "outputs",
+    "logs",
+    "lightning_logs",
+}
+FRAMEWORK_PATTERNS = {
+    "PyTorch": ["torch", "torchvision", "torchaudio", "pytorch"],
+    "Lightning": ["pytorch_lightning", "lightning", "lightning.pytorch"],
+    "Hugging Face": ["transformers", "datasets", "huggingface_hub"],
+    "TensorFlow/Keras": ["tensorflow", "keras"],
+    "JAX/Flax": ["jax", "jaxlib", "flax", "optax"],
+    "MONAI": ["monai"],
+    "OpenMMLab": ["mmdet", "mmcv", "mmengine", "model-index.yml"],
+    "Ultralytics": ["ultralytics"],
+}
 PYTHON_SHADOW_MODULES = {
     "argparse",
     "collections",
@@ -181,6 +226,182 @@ def read_readme(root: Path) -> str:
     if not path.exists():
         return ""
     return path.read_text(encoding="utf-8", errors="ignore").lower()
+
+
+def iter_repo_files(root: Path) -> list[Path]:
+    """Return repository files, skipping heavy artifacts and caches."""
+    files: list[Path] = []
+    for path in root.rglob("*"):
+        if not path.is_file():
+            continue
+        rel_parts = path.relative_to(root).parts
+        if any(part in REPO_FILE_SKIP_DIRS for part in rel_parts):
+            continue
+        files.append(path)
+    return sorted(files)
+
+
+def read_text_sample(path: Path, max_chars: int = 200_000) -> str:
+    """Read a bounded text sample from a file for heuristic analysis."""
+    try:
+        return path.read_text(encoding="utf-8", errors="ignore")[:max_chars].lower()
+    except OSError:
+        return ""
+
+
+def normalize_dependency_name(name: str) -> str:
+    """Return a comparable package name from a dependency specifier."""
+    match = re.match(r"\s*([A-Za-z0-9_.-]+)", name)
+    if not match:
+        return ""
+    return match.group(1).lower().replace("_", "-")
+
+
+def dependency_names_from_text(text: str) -> set[str]:
+    """Extract likely package names from common Python dependency files."""
+    names: set[str] = set()
+    for line in text.splitlines():
+        stripped = line.split("#", 1)[0].strip()
+        if not stripped or stripped.startswith(("[", "]")):
+            continue
+
+        for quoted in re.findall(r"""["']([^"']+)["']""", stripped):
+            normalized = normalize_dependency_name(quoted)
+            if normalized:
+                names.add(normalized)
+
+        if stripped.startswith("-"):
+            stripped = stripped.lstrip("-").strip()
+        elif "=" in stripped:
+            continue
+
+        if stripped.startswith("python "):
+            continue
+
+        normalized = normalize_dependency_name(stripped)
+        if normalized:
+            names.add(normalized)
+    return names
+
+
+def import_roots(path: Path) -> set[str]:
+    """Return top-level modules imported by a Python file."""
+    try:
+        tree = ast.parse(path.read_text(encoding="utf-8", errors="ignore"))
+    except (OSError, SyntaxError):
+        return set()
+
+    roots: set[str] = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            roots.update(alias.name.split(".", 1)[0].lower() for alias in node.names)
+        elif isinstance(node, ast.ImportFrom) and node.module:
+            roots.add(node.module.split(".", 1)[0].lower())
+    return roots
+
+
+def detect_frameworks(root: Path, files: list[Path]) -> list[str]:
+    """Detect likely ML frameworks from dependencies and Python imports."""
+    signals: set[str] = set()
+    for relative in [
+        "pyproject.toml",
+        "requirements.txt",
+        "environment.yml",
+        "conda.yml",
+        "setup.py",
+    ]:
+        path = root / relative
+        if path.exists():
+            signals.update(dependency_names_from_text(read_text_sample(path)))
+
+    for path in files:
+        if path.suffix == ".py":
+            signals.update(import_roots(path))
+
+    found = [
+        framework
+        for framework, patterns in FRAMEWORK_PATTERNS.items()
+        if any(matches_dependency_signal(pattern, signals) for pattern in patterns)
+    ]
+    return found or ["unknown"]
+
+
+def matches_dependency_signal(pattern: str, signals: set[str]) -> bool:
+    """Return whether a dependency/import signal matches a framework package."""
+    normalized = pattern.lower().replace("_", "-")
+    return any(signal == normalized or signal.startswith(f"{normalized}-") for signal in signals)
+
+
+def detect_external_readme_links(readme: str) -> list[str]:
+    """Detect useful external README resources without rewarding docs filler."""
+    return [
+        name
+        for name, patterns in README_EXTERNAL_LINK_PATTERNS.items()
+        if any(pattern in readme for pattern in patterns)
+    ]
+
+
+def classify_scale(file_count: int, python_count: int) -> str:
+    """Classify repository size for structure matching."""
+    if python_count <= 10 and file_count <= 60:
+        return "tiny"
+    if python_count <= 40 and file_count <= 180:
+        return "small"
+    if python_count <= 180 and file_count <= 900:
+        return "medium"
+    return "large"
+
+
+def classify_repo_type(
+    readme: str,
+    python_count: int,
+    config_count: int,
+    notebooks_count: int,
+    has_package: bool,
+    has_deployment: bool,
+    external_links: list[str],
+) -> str:
+    """Infer the primary repository type from content and scale signals."""
+    paper_signals = ["arxiv", "citation", "bibtex", "paper", "reproduce"]
+    demo_signals = ["demo", "gradio", "streamlit", "colab", "infer", "predict"]
+    model_zoo_signals = ["model zoo", "checkpoint", "pretrained", "weights", "benchmark"]
+
+    if has_deployment:
+        return "production ML"
+    if any(signal in readme for signal in model_zoo_signals) and config_count >= 5:
+        return "model zoo or benchmark"
+    if any(signal in readme for signal in demo_signals) and python_count <= 60:
+        return "inference demo or app"
+    has_paper_link = bool({"arxiv", "paper"} & set(external_links))
+    if any(signal in readme for signal in paper_signals) or has_paper_link:
+        return "paper release"
+    if has_package or python_count > 25:
+        return "method or library"
+    if notebooks_count and python_count <= 10:
+        return "experiment notebook cleanup"
+    return "small research codebase"
+
+
+def recommend_structure(repo_type: str, scale: str) -> str:
+    """Recommend the smallest high-impact structure that fits the repository."""
+    if repo_type == "paper release":
+        return "paper-release: README + configs/experiments + scripts + tests + optional citation"
+    if repo_type == "model zoo or benchmark":
+        return "model-zoo: configs + tools/scripts + checkpoint/result tables + tests"
+    if repo_type == "method or library":
+        return "library: src/<package> + examples + tests + API-oriented README"
+    if repo_type == "inference demo or app":
+        return "demo: scripts/infer.py + sample assets + checkpoint links + smoke tests"
+    if repo_type == "production ML":
+        return (
+            "production-ml: package/service boundary + deployment smoke tests "
+            "+ minimal ops README"
+        )
+    if repo_type == "experiment notebook cleanup":
+        return "notebook-to-repo: scripts + configs + src only for reused code"
+    if scale in {"tiny", "small"}:
+        return "small-research: minimal README + scripts + configs + tests; no docs/ by default"
+    return "research-codebase: src package + scripts + configs + tests + optional release metadata"
 
 
 def markdown_headings(text: str) -> list[tuple[int, str, int]]:
@@ -508,6 +729,8 @@ def audit(root: Path) -> int:
         print(f"error: repository path does not exist or is not a directory: {root}")
         return 2
 
+    repo_files = iter_repo_files(root)
+    python_files = iter_python_files(root)
     present_root = exists_any(root, ROOT_FILES)
     present_dirs = exists_any(root, TARGET_DIRS)
     present_entrypoints = exists_any(root, ENTRYPOINTS)
@@ -530,9 +753,19 @@ def audit(root: Path) -> int:
     )
     ci_present = has_ci(root)
     code_quality_files = exists_any(root, CODE_QUALITY_FILES)
+    file_count = len(repo_files)
+    python_count = len(python_files)
+    config_count = len(config_files)
+    package_dirs = ["models", "losses", "metrics", "trainers", "pipelines"]
+    has_package = "src" in present_dirs or any((root / name).is_dir() for name in package_dirs)
+    has_deployment = any(
+        (root / name).exists()
+        for name in ["Dockerfile", "docker-compose.yml", "app.py", "serve.py", "deployment"]
+    )
 
     gitignore = read_gitignore(root)
     readme = read_readme(root)
+    frameworks = detect_frameworks(root, repo_files)
     ignored_artifacts = [name for name in ARTIFACT_DIRS if name in gitignore]
     existing_artifacts = [name for name in ARTIFACT_DIRS if (root / name).exists()]
     readme_sections = [section for section in README_SECTIONS if section in readme]
@@ -541,8 +774,8 @@ def audit(root: Path) -> int:
     readme_has_badges = any(token in readme for token in README_BADGE_TOKENS)
     readme_has_gallery = any(token in readme for token in README_GALLERY_TOKENS)
     readme_has_centered_hero = "<div align=\"center\"" in readme or "<p align=\"center\"" in readme
-    readme_has_links = readme.count("](") >= 3 or readme.count("<a ") >= 3
     readme_link_targets = [target for target in README_LINK_TARGETS if target in readme]
+    readme_external_links = detect_external_readme_links(readme)
     readme_has_link_hub = len(readme_link_targets) >= 4
     readme_has_checkpoint_signal = any(
         token in readme for token in ["checkpoint", "pretrained", "model zoo", "weights"]
@@ -553,7 +786,17 @@ def audit(root: Path) -> int:
     )
     readme_has_early_quickstart = has_early_quickstart(readme)
     readme_has_dead_placeholders = any(token in readme for token in README_DEAD_PLACEHOLDERS)
-    python_files = iter_python_files(root)
+    repo_scale = classify_scale(file_count, python_count)
+    repo_type = classify_repo_type(
+        readme=readme,
+        python_count=python_count,
+        config_count=config_count,
+        notebooks_count=len(notebooks),
+        has_package=has_package,
+        has_deployment=has_deployment,
+        external_links=readme_external_links,
+    )
+    target_structure = recommend_structure(repo_type, repo_scale)
     py_stats = {
         "syntax_errors": 0,
         "module_docstring_expected": 0,
@@ -605,7 +848,10 @@ def audit(root: Path) -> int:
     checks = [
         ("README", "README.md" in present_root),
         ("README core sections", len(readme_sections) >= 4),
-        ("README visual or link hub", readme_has_visual or readme_has_links),
+        (
+            "README real visual or external link hub",
+            readme_has_visual or bool(readme_external_links),
+        ),
         ("README early quickstart", readme_has_early_quickstart),
         ("README no dead placeholders", not readme_has_dead_placeholders),
         ("license", "LICENSE" in present_root),
@@ -646,6 +892,9 @@ def audit(root: Path) -> int:
 
     print(f"Repository: {root}")
     print(f"Score: {score}/{total}")
+    print(f"Profile: {repo_scale} {repo_type}")
+    print(f"Framework signals: {', '.join(frameworks)}")
+    print(f"Recommended structure: {target_structure}")
     print()
     print("Checks:")
     for name, ok in checks:
@@ -654,6 +903,11 @@ def audit(root: Path) -> int:
 
     print()
     print("Detected:")
+    print(f"- files considered: {file_count}")
+    print(f"- repository scale: {repo_scale}")
+    print(f"- repository type: {repo_type}")
+    print(f"- framework signals: {', '.join(frameworks)}")
+    print(f"- recommended structure: {target_structure}")
     print(f"- root files: {', '.join(present_root) if present_root else 'none'}")
     print(f"- dependency files: {', '.join(dependency_files) if dependency_files else 'none'}")
     print(
@@ -673,6 +927,8 @@ def audit(root: Path) -> int:
     print(f"- README early quickstart: {'yes' if readme_has_early_quickstart else 'no'}")
     link_targets = ", ".join(readme_link_targets) if readme_link_targets else "none"
     print(f"- README link targets: {link_targets}")
+    external_targets = ", ".join(readme_external_links) if readme_external_links else "none"
+    print(f"- README external resource links: {external_targets}")
     print(f"- README checkpoint/model signal: {'yes' if readme_has_checkpoint_signal else 'no'}")
     print(f"- README result signal: {'yes' if readme_has_result_signal else 'no'}")
     print(f"- README dead placeholders: {'yes' if readme_has_dead_placeholders else 'no'}")
@@ -709,6 +965,7 @@ def audit(root: Path) -> int:
         ("README badges", readme_has_badges),
         ("README gallery/examples signal", readme_has_gallery or readme_has_visual),
         ("README research link hub", readme_has_link_hub),
+        ("README external paper/demo/model links", bool(readme_external_links)),
         ("README checkpoint/model signal", readme_has_checkpoint_signal),
         ("README result signal", readme_has_result_signal),
     ]

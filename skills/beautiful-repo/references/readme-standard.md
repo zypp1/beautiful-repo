@@ -1,6 +1,6 @@
 # README Standard
 
-Use this reference before writing or polishing a deep learning repository README. The README should feel like a clear research product page: visual first, scannable cards second, full reproducibility details third.
+Use this reference before writing or polishing a deep learning repository README. The README should feel like a clear research product page: visual first, real external resources second, runnable commands third.
 
 For a ready-to-copy skeleton, use `assets/readme-templates/visual-research-readme.md`.
 
@@ -16,7 +16,7 @@ The first visible screen should answer:
 
 - What is this?
 - What task does it solve?
-- Where are the paper, project page, docs, demo, and checkpoints?
+- Where are the paper, arXiv/OpenReview/DOI, project page, Bilibili/YouTube demo, model hub, dataset, and checkpoints when they exist?
 - What does the model output look like?
 - How do I install and run one minimal command?
 
@@ -29,7 +29,7 @@ Recommended order:
 
 **One-sentence task/model/research claim.**
 
-[Paper](REPLACE_OR_REMOVE) | [Project Page](REPLACE_OR_REMOVE) | [Demo](REPLACE_OR_REMOVE) | [Docs](REPLACE_OR_REMOVE) | [Checkpoints](REPLACE_OR_REMOVE) | [Dataset](REPLACE_OR_REMOVE) | [Citation](#citation)
+[Paper](REPLACE_OR_REMOVE) | [arXiv](REPLACE_OR_REMOVE) | [Bilibili](REPLACE_OR_REMOVE) | [Demo](REPLACE_OR_REMOVE) | [Hugging Face](REPLACE_OR_REMOVE) | [ModelScope](REPLACE_OR_REMOVE) | [Checkpoints](REPLACE_OR_REMOVE) | [Dataset](REPLACE_OR_REMOVE)
 
 ![Representative output](assets/figures/teaser.png)
 
@@ -38,29 +38,42 @@ Recommended order:
 ## Quickstart
 ```
 
-Use badges sparingly. Good badges: license, tests, docs, package version, paper/arXiv, model hub. Avoid noisy badges that do not help users decide whether to use the repo.
+Use badges sparingly. Good badges: license, tests, package version, paper/arXiv, model hub, checkpoint status, and demo availability. Avoid noisy badges that do not help users decide whether to use the repo.
+
+## Link Policy
+
+The README link hub is for real user-facing resources, not filler.
+
+Prefer these links when the project actually has them:
+
+- paper: arXiv, OpenReview, ACL Anthology, DOI, publisher page
+- demos: Bilibili, YouTube, project page, Gradio/Spaces, Colab, Kaggle
+- model hubs: Hugging Face, ModelScope, official release assets
+- data and artifacts: dataset page, Zenodo, Papers with Code, checkpoint files, logs
+
+Do not include a default `Docs` link just to make the first screen look complete. Link local docs only when a document contains substantial material that does not belong in README, such as long data preparation, reproduction tables, API reference, or deployment notes. If no arXiv, Bilibili, demo, model hub, dataset, or checkpoint link exists, remove that slot instead of replacing it with `docs/`.
 
 ## High-Star README Patterns
 
 High-star repositories tend to converge on the same presentation structure:
 
-- centered hero with title, short claim, badges, and compact link hub
+- centered hero with title, short claim, badges, and compact real-resource link hub
 - one strong image or GIF before long prose
 - very short "install + run" path near the top
 - emoji-led section labels when the repository is meant to feel approachable
 - feature cards or use-case cards for fast scanning
 - example gallery for visual products or model outputs
 - model/checkpoint/result tables for technical credibility
-- deeper docs linked instead of copied into the README
+- deeper docs linked only when they contain substantial setup, reproduction, API, or deployment material
 
 For deep learning repositories, prefer this order:
 
-1. Hero: logo/title, one-sentence claim, badges, link hub.
+1. Hero: logo/title, one-sentence claim, badges, real-resource link hub.
 2. Visual proof: teaser image, demo GIF, qualitative grid, or architecture/result image.
 3. At-a-glance cards: task, model, datasets, best metric, runtime, checkpoints.
 4. Quickstart: install and one inference/demo command.
 5. Model/result cards: pretrained models, benchmark results, reproduction commands.
-6. Details: setup, data, training, evaluation, docs, citation, license.
+6. Details: setup, data, training, evaluation, optional deep docs, citation, license.
 
 ## Rich README Mode
 
@@ -69,12 +82,12 @@ Use this mode when the user asks for an `awesome-*`, Qwen-like, or visually rich
 Recommended ingredients:
 
 - a banner, logo, teaser, or screenshot before the first long paragraph
-- 3 to 6 badges for paper/docs/package/tests/license/model hub
-- a link hub with emoji labels only when it improves scanning
-- emoji section headers such as `🚀 Quickstart`, `🖼️ Gallery`, `📦 Models`, `🧪 Reproduction`, `📚 Docs`, and `🙏 Citation`
+- 3 to 6 badges for paper/arXiv/package/tests/license/model hub/demo
+- a link hub with arXiv, Bilibili/YouTube, demo, Hugging Face, ModelScope, dataset, and checkpoints when those resources exist
+- emoji section headers such as `🚀 Quickstart`, `🖼️ Gallery`, `📦 Models`, `🧪 Reproduction`, and `🙏 Citation`
 - two-row card tables for "what it does", "what is included", or "why use it"
 - one image gallery or model-output panel for visual tasks
-- a compact "choose your path" table for training, evaluation, inference, reproduction, and docs
+- a compact "choose your path" table for training, evaluation, inference, reproduction, model download, and demos
 
 Keep the tone technical. Emojis should act as visual anchors, not replace precise names, commands, or metrics.
 
@@ -98,7 +111,7 @@ For deep learning repositories, prefer a card-based README over a plain text-onl
 Minimum visual standard:
 
 - one teaser image, qualitative result grid, architecture diagram, or demo GIF near the top
-- one compact link hub for paper, project page, docs, demo, dataset, checkpoints, and citation
+- one compact link hub for paper/arXiv, project page, Bilibili/YouTube, demo, model hub, dataset, and checkpoints when available
 - one task/model information card block
 - one results or benchmark card/table
 - one checkpoint/model card table
@@ -109,12 +122,12 @@ Use `assets/figures/teaser.png` or `assets/figures/overview.png` for primary vis
 ## Aesthetic Rules That Survive GitHub Rendering
 
 - Use one visual anchor near the top. Pick either a logo/banner plus screenshot or a model-output teaser. Do not stack several large images before Quickstart.
-- Use 3 to 6 badges. Prefer paper, docs, package, tests, license, and model hub. Badge overload reduces clarity.
-- Use a compact link hub directly under the one-sentence claim.
+- Use 3 to 6 badges. Prefer paper/arXiv, package, tests, license, model hub, and demo. Badge overload reduces clarity.
+- Use a compact link hub directly under the one-sentence claim, but only for real resources.
 - Use HTML tables for cards because they render consistently in GitHub Markdown.
 - Keep card text short: one label, one value, one optional link.
 - Use screenshots, GIFs, architecture diagrams, qualitative grids, and benchmark plots only when they reveal actual project behavior.
-- Put long explanations, full ablations, and dataset setup detail in `docs/` and link them from the README.
+- Keep long explanations, full ablations, and dataset setup detail outside the first screen; link local docs only when those files already carry real detail.
 - Do not ship dead placeholders: replace or remove `REPLACE_OR_REMOVE`, `href="#"`, fake checkpoint links, fake metrics, and missing image paths before finishing. Real section anchors such as `#citation` and `#license` are fine.
 
 ## Card Templates
@@ -129,13 +142,17 @@ GitHub README supports a safe subset of HTML. Use HTML tables for visually stabl
   <p><strong>Short model/task claim in one sentence.</strong></p>
   <p>
     <a href="REPLACE_OR_REMOVE"><img src="https://img.shields.io/badge/Paper-arXiv-b31b1b" alt="Paper"></a>
-    <a href="REPLACE_OR_REMOVE"><img src="https://img.shields.io/badge/Docs-online-blue" alt="Docs"></a>
+    <a href="REPLACE_OR_REMOVE"><img src="https://img.shields.io/badge/Bilibili-demo-00a1d6" alt="Bilibili demo"></a>
+    <a href="REPLACE_OR_REMOVE"><img src="https://img.shields.io/badge/HuggingFace-model-ffcc4d" alt="Hugging Face model"></a>
     <a href="#license"><img src="https://img.shields.io/badge/License-MIT-green" alt="License"></a>
   </p>
   <p>
     <a href="REPLACE_OR_REMOVE">Paper</a> |
+    <a href="REPLACE_OR_REMOVE">arXiv</a> |
     <a href="REPLACE_OR_REMOVE">Project Page</a> |
-    <a href="docs/reproduction.md">Reproduce</a> |
+    <a href="REPLACE_OR_REMOVE">Bilibili</a> |
+    <a href="REPLACE_OR_REMOVE">Hugging Face</a> |
+    <a href="REPLACE_OR_REMOVE">ModelScope</a> |
     <a href="#pretrained-models">Checkpoints</a> |
     <a href="#citation">Citation</a>
   </p>
@@ -290,7 +307,7 @@ Use the sections that fit the project:
 - License
 - Acknowledgements
 
-For a small paper repo, keep the README complete but not encyclopedic; move long setup, data, reproduction, and results details into `docs/`.
+For a small paper repo, keep the README complete but not encyclopedic. Use local docs only when long setup, data, reproduction, or results details are too large for README and already contain real substance.
 
 ## Quickstart Quality Bar
 
@@ -354,18 +371,18 @@ Primary image quality matters:
 - Use real qualitative outputs, architecture diagrams, benchmark visualizations, or demo screenshots.
 - Add alt text that describes what the image shows.
 - Keep width reasonable with HTML, usually `width="900"` for a centered hero image.
-- Store small images under `assets/figures/`; put large images in releases, docs hosting, or external artifact storage.
+- Store small images under `assets/figures/`; put large images in releases, project pages, model hubs, or external artifact storage.
 - If results are privacy-sensitive or licensed, use diagrams or synthetic examples instead of restricted data.
 
 ## README Polish Checklist
 
-- [ ] The first screen has a centered title, short claim, link hub, and visual.
+- [ ] The first screen has a centered title, short claim, real-resource link hub, and visual.
 - [ ] A new user can identify task, model type, dataset, best result, and checkpoint availability without scrolling far.
 - [ ] Quickstart appears before long installation/reproduction detail.
 - [ ] Checkpoints are shown as cards or tables with config, dataset, metric, and link.
 - [ ] Results are shown as cards or tables with exact eval command or config.
 - [ ] Images have useful alt text and point to real repository assets.
-- [ ] The README links to deeper docs instead of becoming a long paper appendix.
+- [ ] The README links to arXiv/Bilibili/demo/model/data/checkpoint resources when available and does not use local docs as filler.
 - [ ] No fake metrics, fake screenshots, or unverifiable claims are introduced.
 
 ## Citation Section

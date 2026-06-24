@@ -271,6 +271,37 @@ def TestForward():
         self.assertFalse(module.has_early_quickstart(prose_only))
         self.assertTrue(module.has_early_quickstart(heading))
 
+    def test_framework_detection_uses_imports_not_string_constants(self) -> None:
+        module = load_module()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            path = root / "audit_like.py"
+            path.write_text(
+                'PATTERNS = ["torch", "transformers", "tensorflow"]\n',
+                encoding="utf-8",
+            )
+
+            frameworks = module.detect_frameworks(root, [path])
+
+        self.assertEqual(frameworks, ["unknown"])
+
+    def test_framework_detection_reads_structured_dependency_files(self) -> None:
+        module = load_module()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "pyproject.toml").write_text(
+                '[project]\ndependencies = ["torch>=2", "transformers"]\n',
+                encoding="utf-8",
+            )
+            (root / "environment.yml").write_text(
+                "dependencies:\n  - pytorch\n  - jaxlib\n",
+                encoding="utf-8",
+            )
+
+            frameworks = module.detect_frameworks(root, [])
+
+        self.assertEqual(frameworks, ["PyTorch", "Hugging Face", "JAX/Flax"])
+
     def test_audit_missing_path_returns_error_code(self) -> None:
         module = load_module()
 
@@ -309,6 +340,44 @@ def TestForward():
         self.assertNotIn("MISSING: citation", output)
         self.assertIn("no: docs directory", output)
         self.assertIn("no: citation metadata", output)
+
+    def test_audit_profiles_paper_release_and_external_links(self) -> None:
+        module = load_module()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "README.md").write_text(
+                "# Model\n\n"
+                "[arXiv](https://arxiv.org/abs/2601.00001) | "
+                "[Bilibili](https://www.bilibili.com/video/BV1xx) | "
+                "[Hugging Face](https://huggingface.co/org/model) | "
+                "[ModelScope](https://modelscope.cn/models/org/model)\n\n"
+                "## Quickstart\nrun\n\n## Installation\ninstall\n\n"
+                "## Data\ndata\n\n## Training\ntrain\n\n"
+                "## Results\nmetrics\n",
+                encoding="utf-8",
+            )
+            (root / "LICENSE").write_text("MIT\n", encoding="utf-8")
+            (root / "pyproject.toml").write_text("[project]\nname='x'\n", encoding="utf-8")
+            (root / ".gitignore").write_text("data/\noutputs/\n", encoding="utf-8")
+            (root / "requirements.txt").write_text("torch\ntransformers\n", encoding="utf-8")
+            (root / "configs").mkdir()
+            (root / "scripts").mkdir()
+            (root / "scripts" / "train.py").write_text(
+                '"""Train the paper model."""\n',
+                encoding="utf-8",
+            )
+
+            buffer = io.StringIO()
+            with redirect_stdout(buffer):
+                module.audit(root)
+            output = buffer.getvalue()
+
+        self.assertIn("Profile: tiny paper release", output)
+        self.assertIn("Framework signals: PyTorch, Hugging Face", output)
+        self.assertIn("Recommended structure: paper-release", output)
+        self.assertIn("README external resource links: arxiv, bilibili", output)
+        self.assertIn("hugging_face", output)
+        self.assertIn("modelscope", output)
 
 
 if __name__ == "__main__":

@@ -6,7 +6,7 @@ The policy combines PEP 257, Ruff/pydocstyle public-docstring rules, PyTorch-sty
 
 ## Core Rule
 
-Docstrings are concise API contracts, not decorative comments.
+Docstrings are concise API contracts, not decorative comments or documentation padding.
 
 Keep top-of-file module docstrings and function docstrings brief. The goal is the shortest text that accurately states the contract a caller or maintainer needs. Prefer one precise paragraph plus short `Args`/`Returns` sections over long explanations.
 
@@ -29,7 +29,7 @@ Do not add docstrings that merely restate the name.
 - Keep function docstrings focused on contract: purpose, non-obvious arguments, return value, raised errors, side effects, and deep learning tensor/config details.
 - Omit `Args` entries for obvious parameters only when the project style allows it and the type/name already carries the contract.
 - Prefer exact compact notation such as ``(B, C, H, W)``, ``float32``, ``[0, 1]``, and ``output_dir`` over prose.
-- Move tutorials, long examples, derivations, paper background, and reproduction walkthroughs to README or docs.
+- Move tutorials, long examples, derivations, paper background, and reproduction walkthroughs out of code. Put them in README only when they are essential to first use; otherwise leave them to substantial docs if the repo already has them.
 - Delete filler such as "This function is used to", "This module contains", "Helper for", and implementation narration.
 
 Good concise module docstring:
@@ -263,7 +263,7 @@ Before considering docstring work complete:
 - Public modules have top-of-file docstrings.
 - Public classes/functions have docstrings unless the repository convention intentionally excludes them.
 - Existing docstrings were checked for thin/stale/incomplete content, not only presence.
-- Module and function docstrings are concise; long background or examples moved to docs.
+- Module and function docstrings are concise; long background or examples moved out of code.
 - Tensor contracts include shapes, dtypes, devices, value ranges, and batch keys where relevant.
 - Data, checkpoint, config, metric, and side-effect contracts are explicit.
 - Tests or call sites support any newly documented behavior.

@@ -34,7 +34,7 @@ Use this file to understand the evidence base behind the skill. The list is repr
 - Open Model Zoo: https://github.com/openvinotoolkit/open_model_zoo
 - ONNX Model Zoo: https://github.com/onnx/models
 
-Use these for presentation patterns: centered hero blocks, logo or output images, badges, compact link hubs, short install paths, demo screenshots/GIFs, feature cards, example galleries, model/result tables, and links to deeper docs. Do not copy content claims.
+Use these for presentation patterns: centered hero blocks, logo or output images, badges, compact real-resource link hubs, short install paths, demo screenshots/GIFs, feature cards, example galleries, and model/result tables. Do not copy content claims.
 
 ## Official Standards And Tooling Docs
 
@@ -58,20 +58,32 @@ Do not copy any single repository wholesale. Use the common patterns:
 
 - clear first-screen README signal
 - visual hero with real product/model output
-- badge row and compact documentation link hub
+- badge row and compact real-resource link hub
 - feature cards or use-case cards for fast scanning
 - screenshots, qualitative result grids, or demo GIFs
-- quickstart before long documentation
+- quickstart before long documentation or release detail
 - stable train/eval/infer commands
 - configs tied to results
 - checkpoint and dataset tables
-- docs for setup, data, reproduction, and results
+- local docs only for substantial setup, data, reproduction, API, deployment, or results detail
 - package-quality Python code
 - consistent directory, Python file, package, function, class, constant, config, and experiment naming
 - public module/class/function docstrings that document API contracts, not just names
 - tensor shapes, dtypes, devices, config keys, checkpoint compatibility, metrics, randomness, and side effects in deep learning docstrings
 - smoke tests and CI that do not require full datasets by default
 - citation, license, and contribution metadata
+
+## Adaptive Structure Notes
+
+The high-impact repositories do not share one universal layout. The recurring pattern is adaptive structure:
+
+- Small paper/demo repos keep a short README, runnable scripts, checkpoints or model links, and examples close to the root.
+- Research codebases add configs, reusable package modules, smoke tests, and result/checkpoint tables.
+- Libraries such as Transformers, Diffusers, MONAI, Lightning, and TorchVision invest in package boundaries, examples, tests, docs, and CI because users import them directly.
+- Model zoos such as OpenMMLab-style repos emphasize config trees, model indexes, checkpoint/result tables, and reproducible eval commands.
+- Large application/product repos emphasize screenshots, demos, install paths, integration examples, and community links.
+
+The skill should therefore profile size and content first, then recommend the smallest structure that fits. Do not impose a large framework layout on a one-paper repo.
 
 ## Docstring Pattern Notes
 
@@ -89,8 +101,9 @@ The README guidance intentionally combines research-code patterns with polished 
 - Awesome LLM Apps-style curated READMEs use emoji-led category navigation, visual section anchors, dense resource tables, and approachable scanning for broad audiences.
 - Qwen-style model READMEs use strong project identity, platform/model links, news, quickstart, model tables, and multilingual/community entry points.
 - Dify, Gradio, and Streamlit-style product READMEs use a strong first-screen identity, screenshots or demos, compact links, quickstart, and feature cards.
-- Ultralytics and OpenMMLab-style vision/model-zoo READMEs make docs, installation, model zoo, training, prediction, and deployment paths visible early.
+- Ultralytics and OpenMMLab-style vision/model-zoo READMEs make installation, model zoo, training, prediction, deployment, and checkpoint paths visible early.
 - Segment Anything-style research releases make paper/project/demo/dataset links, visual outputs, getting-started examples, and checkpoint access obvious.
+- Qwen-style model repos make arXiv, model hub, ModelScope, demo/community links, news, and model tables visible. Bilibili/YouTube-style links are useful when they point to real demos or talks.
 - GitHub README and citation guidance supports keeping the repository README discoverable, rendered with GitHub Markdown, and paired with `CITATION.cff` when citation matters.
 
 Translate those patterns into repo-type-specific layouts instead of forcing every deep learning repo into the same README shape.
