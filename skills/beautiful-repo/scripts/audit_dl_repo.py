@@ -13,7 +13,6 @@ from pathlib import Path
 ROOT_FILES = [
     "README.md",
     "LICENSE",
-    "CITATION.cff",
     "pyproject.toml",
     ".gitignore",
 ]
@@ -29,7 +28,6 @@ TARGET_DIRS = [
     "src",
     "scripts",
     "tests",
-    "docs",
     "examples",
 ]
 
@@ -41,7 +39,6 @@ README_SECTIONS = [
     "evaluation",
     "inference",
     "results",
-    "citation",
     "license",
 ]
 
@@ -607,19 +604,11 @@ def audit(root: Path) -> int:
 
     checks = [
         ("README", "README.md" in present_root),
-        ("README core sections", len(readme_sections) >= 5),
+        ("README core sections", len(readme_sections) >= 4),
         ("README visual or link hub", readme_has_visual or readme_has_links),
-        ("README card-style first screen", readme_has_cards and readme_has_visual),
-        ("README centered hero", readme_has_centered_hero),
-        ("README badges", readme_has_badges),
-        ("README gallery/examples signal", readme_has_gallery or readme_has_visual),
         ("README early quickstart", readme_has_early_quickstart),
-        ("README research link hub", readme_has_link_hub),
-        ("README checkpoint/model signal", readme_has_checkpoint_signal),
-        ("README result signal", readme_has_result_signal),
         ("README no dead placeholders", not readme_has_dead_placeholders),
         ("license", "LICENSE" in present_root),
-        ("citation", "CITATION.cff" in present_root),
         ("pyproject", "pyproject.toml" in present_root),
         ("dependency lock or spec", bool(dependency_files)),
         ("code quality config", "pyproject.toml" in present_root or bool(code_quality_files)),
@@ -627,7 +616,6 @@ def audit(root: Path) -> int:
         ("script entrypoints", bool(present_entrypoints)),
         ("src package layout", "src" in present_dirs),
         ("tests", bool(tests)),
-        ("docs", "docs" in present_dirs),
         ("CI", ci_present),
         ("artifact ignore rules", bool(ignored_artifacts)),
         ("Python syntax", py_stats["syntax_errors"] == 0),
@@ -712,6 +700,23 @@ def audit(root: Path) -> int:
     ignored_dirs = ", ".join(ignored_artifacts) if ignored_artifacts else "none"
     print(f"- artifact dirs present: {artifact_dirs}")
     print(f"- artifact dirs ignored: {ignored_dirs}")
+
+    optional_signals = [
+        ("docs directory", "docs" in present_dirs),
+        ("citation metadata", (root / "CITATION.cff").exists()),
+        ("README card-style first screen", readme_has_cards and readme_has_visual),
+        ("README centered hero", readme_has_centered_hero),
+        ("README badges", readme_has_badges),
+        ("README gallery/examples signal", readme_has_gallery or readme_has_visual),
+        ("README research link hub", readme_has_link_hub),
+        ("README checkpoint/model signal", readme_has_checkpoint_signal),
+        ("README result signal", readme_has_result_signal),
+    ]
+    print()
+    print("Optional release/documentation signals:")
+    for name, ok in optional_signals:
+        marker = "yes" if ok else "no"
+        print(f"- {marker}: {name}")
 
     missing = [name for name, ok in checks if not ok]
     if missing:

@@ -26,13 +26,13 @@ Use $beautiful-repo to improve naming, docstrings, module boundaries, and README
 Use these modes:
 
 - Audit mode: inspect only, run the audit script when Python is available, classify the repo, and produce a prioritized migration plan.
-- Implementation mode: make scoped edits, preserve compatibility, add tests/docs, and validate with smoke checks.
+- Implementation mode: make scoped edits, preserve compatibility, add tests and minimal README updates, and validate with smoke checks.
 - README mode: improve the visual GitHub README, images, badges, quickstart, results, checkpoints, citation, and link hub.
 - Code style mode: improve directory/file/API naming, docstrings, function boundaries, imports, type hints, and side-effect boundaries.
 - Release mode: add or improve `CITATION.cff`, model cards, data cards, license notes, result tables, checkpoint instructions, and CI.
-- Multi-agent mode: after an audit or code review, split implementation into focused agents for naming/code style, docstrings, README/docs, tests/CI, and release metadata when the environment supports subagents.
+- Multi-agent mode: after an audit or code review, split implementation into focused agents for naming/code style, docstrings, README quickstart, tests/CI, and optional release metadata when the environment supports subagents.
 
-When the user asks for "everything" or "standardize the repo", cover README, docs, structure, naming, docstrings, configs, entry points, tests, CI, packaging, release metadata, artifacts, and compatibility. Do not stop after only README or only code style.
+When the user asks for "everything" or "standardize the repo", prioritize structure, naming, code style, configs, entry points, tests, CI, packaging, artifact hygiene, compatibility, and a minimal useful README. Treat full docs, model cards, data cards, `CITATION.cff`, and long release notes as optional unless the repository is a paper/model release or the user explicitly asks.
 
 ## Beautiful Means
 
@@ -53,6 +53,7 @@ Optimize for these outcomes, in order:
 - Separate mechanical cleanup from behavioral changes. Keep formatting, layout migration, dependency changes, and training logic changes independently reviewable.
 - Prefer the repository's current framework and conventions. Do not introduce Hydra, Lightning, uv, DVC, MLflow, or Weights & Biases unless the project already uses them or the user approves.
 - Keep notebooks as examples or analysis artifacts, not as the only training/evaluation path.
+- Lower documentation priority for normal repositories. Add only README sections needed to install, run, evaluate, and understand results. Do not create `docs/`, model cards, data cards, `CITATION.cff`, or long documentation unless the repo type or user request justifies them.
 - Treat style work as user-facing engineering work. Improve names, docstrings, function boundaries, type hints, README presentation, and error messages only when it improves maintainability or reproducibility.
 - Keep top-of-file module docstrings and function docstrings concise. Prefer short contract text over long explanations; move tutorials, derivations, and background to docs.
 - Do not make cosmetic edits that obscure experiment logic, historical results, or paper reproduction commands.
@@ -65,7 +66,7 @@ After an audit or review, use a multi-agent workflow when the environment suppor
 2. Assign focused agents or passes:
    - Naming/code agent: directories, Python files, public APIs, module boundaries, imports, and side effects.
    - Docstring agent: concise module/function/class docstrings with tensor/config/checkpoint contracts.
-   - README/docs agent: visual README, quickstart, data/reproduction/results docs, model/data cards.
+   - README/docs agent: minimal README quickstart by default; full docs/model cards only for paper/model releases or explicit user requests.
    - Tests/CI agent: smoke tests, import/config/model-forward checks, lint/format/CI gates.
    - Release agent: citation, license, checkpoint tables, limitations, artifact hygiene.
 3. Keep each agent's edits scoped and compatibility-preserving.
@@ -106,8 +107,8 @@ Always evaluate these areas before calling a repository normalized:
 - Configuration: defaults, experiment configs, path resolution, seeds, hardware assumptions, and reproducibility knobs.
 - Code internals: module boundaries, function size, imports, typing, docstrings, error messages, side effects, and dependency boundaries.
 - Deep learning contracts: tensor shapes, dtypes, devices, batch keys, metrics, checkpoints, randomness, distributed assumptions, and mixed precision behavior.
-- Documentation: visual README, install, quickstart, data prep, training, evaluation, inference, results, checkpoints, troubleshooting, citation, license, acknowledgements.
-- Release metadata: `CITATION.cff`, BibTeX, model card, data card, limitations, ethical/safety notes when relevant.
+- Documentation: minimal README install, quickstart, data prep, train/eval/infer commands, results/checkpoints when relevant, and license. Full docs are optional for normal repositories.
+- Release metadata: optional by default; add `CITATION.cff`, BibTeX, model card, data card, limitations, and ethical/safety notes for paper/model releases or explicit user requests.
 - Quality gates: import tests, config tests, model forward tests, dataset smoke tests, metric sanity tests, lint/format/type checks, CI.
 - Artifact hygiene: `.gitignore`, large files, generated outputs, logs, cached datasets, checkpoints, and reproducible download instructions.
 - Compatibility: old commands, old import paths, published config names, checkpoint names, README links, notebooks, CI commands, and paper reproduction commands.
@@ -120,7 +121,6 @@ Adapt names to the existing project, but converge toward this shape:
 repo/
   README.md
   LICENSE
-  CITATION.cff
   pyproject.toml
   requirements.txt or uv.lock
   .gitignore
@@ -149,12 +149,7 @@ repo/
     test_imports.py
     test_model_forward.py
     test_dataset_smoke.py
-  docs/
-    setup.md
-    data.md
-    reproduction.md
-    results.md
-    model_card.md
+  docs/                  # optional; use for paper/model releases or complex setup
   examples/
     quickstart.ipynb
   assets/
@@ -167,15 +162,15 @@ Keep large or generated paths out of git: `data/`, `datasets/`, `checkpoints/`, 
 
 1. Establish safety: check git status, identify untracked artifacts, find current runnable commands, and record baseline import/test behavior.
 2. Add repository hygiene: `.gitignore`, `pyproject.toml` tool config, pre-commit config, and minimal quality commands.
-3. Add documentation scaffolding: README quickstart, environment setup, data preparation, reproduction, results, citation, and license notes.
+3. Add minimal README scaffolding: environment setup, data preparation, quickstart, train/eval/infer commands, results/checkpoints when relevant, and license notes.
 4. Introduce stable entry points: `scripts/train.py`, `scripts/eval.py`, `scripts/infer.py`; keep wrappers around old commands when needed.
 5. Centralize configuration: move hard-coded hyperparameters and paths into `configs/` only after entry points are stable.
 6. Modularize code: separate data, models, losses, metrics, training loop, evaluation, inference, and utilities.
 7. Normalize code style: apply project-local formatting, normalize directory/file/API names, add or improve public module/class/function docstrings, improve vague names, split oversized functions, and convert import-time side effects into explicit calls.
 8. Add tests: start with import, config load, model forward, metric sanity, and dataset smoke tests using tiny synthetic data where possible.
-9. Polish README and docs: make the repository useful within the first screen, then add full reproduction and result details.
+9. Polish README enough for use: first-screen purpose, install, quickstart, data, train/eval/infer, results/checkpoints when relevant. Add full docs only for paper/model releases or explicit user requests.
 10. Add CI: run lint, format check, tests, and import checks. Avoid GPU-only CI unless the repository already has GPU runners.
-11. Add release metadata: `CITATION.cff`, model card, data card, checkpoint download instructions, BibTeX, and reproducibility notes.
+11. Add release metadata only when relevant: `CITATION.cff`, model card, data card, checkpoint download instructions, BibTeX, and reproducibility notes for paper/model releases.
 
 ## Minimum Done Criteria
 
@@ -188,12 +183,12 @@ A normalized deep learning repo should have:
 - Clear dataset acquisition/preparation instructions, including expected directory layout.
 - Clear checkpoint/weight download instructions and checksum/version notes when available.
 - Tests that prove imports, config loading, model construction, one forward pass, and at least one metric path.
-- README sections for badges, visual project signal, installation, quickstart, reproduction, results, model/checkpoint table, citation, license, and acknowledgements.
+- README sections for purpose, installation, quickstart, data, train/eval/infer commands, results/checkpoints when relevant, and license.
 - README images and links point to real assets or are explicitly removed. Do not leave `href="#"`, fake checkpoint links, fake metrics, or placeholder screenshots in a finished README.
 - Directories, Python files, packages, public APIs, configs, experiments, CLI flags, and output paths follow a consistent naming convention or preserve a documented legacy convention.
 - Public modules, classes, and functions use consistent naming, type hints where practical, and concise docstrings that explain ownership, tensor shapes, units, devices, configs, checkpoints, and side effects.
 - Training, evaluation, and inference code avoids hidden import-time side effects, author-local absolute paths, and unstructured global state.
-- `CITATION.cff` and BibTeX for paper repositories.
+- `CITATION.cff` and BibTeX only for paper/model release repositories or explicit user requests.
 - `.gitignore` protecting large data, model weights, logs, and generated outputs.
 
 ## Output Style
@@ -204,7 +199,7 @@ When auditing, report:
 2. High-impact gaps ordered by reproducibility risk.
 3. Proposed target structure.
 4. A phased migration plan with small reviewable steps.
-5. Coverage status for structure, naming, code style, docs, tests, CI, release metadata, artifacts, and compatibility.
+5. Coverage status for structure, naming, code style, minimal README, tests, CI, artifacts, and compatibility. Separately list optional docs/release metadata only when relevant.
 6. Commands used for validation and their results.
 
 When editing, finish with changed files, preserved compatibility notes, and validation performed. If a full training run was not performed, say so explicitly.

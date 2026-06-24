@@ -1,7 +1,7 @@
 <div align="center">
   <img src="assets/beautiful-repo.svg" alt="Beautiful Repo banner" width="100%">
   <h1>✨ Beautiful Repo</h1>
-  <p><strong>Turn deep learning repositories into visual, reproducible, citation-ready GitHub releases.</strong></p>
+  <p><strong>Turn deep learning repositories into runnable, well-structured, reviewable GitHub projects.</strong></p>
   <p>
     <a href="skills/beautiful-repo/SKILL.md"><img src="https://img.shields.io/badge/Agent%20Skill-beautiful--repo-111827" alt="Agent Skill"></a>
     <a href="skills/beautiful-repo/references/readme-standard.md"><img src="https://img.shields.io/badge/README-rich%20visual%20standard-2563eb" alt="README rich visual standard"></a>
@@ -24,8 +24,8 @@
 
 <table>
   <tr>
-    <td><strong>🎨 README polish</strong><br>Hero, badges, link hub, screenshots, galleries, quickstart, checkpoints, and result cards.</td>
-    <td><strong>🧪 Research release</strong><br>Configs, reproduction docs, model/data cards, citation, license, and limitations.</td>
+    <td><strong>🎨 README polish</strong><br>Minimal quickstart by default; rich visual README only when release polish matters.</td>
+    <td><strong>🧪 Research release</strong><br>Configs, reproduction notes, citation, and model/data cards only for paper or model releases.</td>
     <td><strong>🧠 Python quality</strong><br>Docstrings, tensor contracts, names, module boundaries, tests, and CI gates.</td>
   </tr>
 </table>
@@ -34,11 +34,11 @@
 
 | Area | What gets normalized |
 | --- | --- |
-| 🗂️ Repository shape | Research-grade layout, configs, scripts, docs, tests, and release metadata. |
+| 🗂️ Repository shape | Practical layout, configs, scripts, tests, optional docs, and release metadata when needed. |
 | 🚀 Entry points | Stable `train.py`, `eval.py`, `infer.py`, and smoke-test commands. |
-| 🎨 README | Visual hero, badges, navigation, screenshots, model cards, checkpoint tables, and results. |
+| 🎨 README | Minimal install/quickstart/run path by default; visual polish for public releases. |
 | 🧠 Code style | Clear names, docstrings, tensor shapes, type hints, function boundaries, and side effects. |
-| 📦 Research artifacts | Model cards, data cards, `CITATION.cff`, BibTeX, limitations, and acknowledgements. |
+| 📦 Research artifacts | Optional model cards, data cards, `CITATION.cff`, BibTeX, limitations, and acknowledgements. |
 | ✅ Quality gates | Import checks, config checks, one-batch tests, CI, and artifact ignore rules. |
 
 ## 🚀 Install
@@ -70,7 +70,7 @@ Use $beautiful-repo to audit this deep learning repository and propose a migrati
 For an implementation pass:
 
 ```text
-Use $beautiful-repo to normalize this PyTorch repository. Keep old training commands compatible, add missing docs/tests/configs, polish the visual README, and validate with smoke checks.
+Use $beautiful-repo to normalize this PyTorch repository. Keep old training commands compatible, add missing tests/configs, keep README minimal but useful, and validate with smoke checks.
 ```
 
 For a focused naming/docstring pass:
@@ -84,8 +84,8 @@ Useful modes:
 | Mode | Prompt intent |
 | --- | --- |
 | Audit | Inspect only; classify the repo and produce a prioritized migration plan. |
-| Implementation | Make scoped changes across structure, code, docs, tests, CI, and release metadata. |
-| README | Build a visual GitHub README with hero, badges, cards, gallery, quickstart, results, checkpoints, and citation. |
+| Implementation | Make scoped changes across structure, code, configs, tests, CI, and minimal README. |
+| README | Keep a minimal install/quickstart/run README by default; add visual polish only for public releases. |
 | Code style | Normalize naming, docstrings, module boundaries, type hints, imports, and side effects. |
 | Release | Add citation, model/data cards, limitations, checkpoint instructions, and quality gates. |
 
@@ -144,7 +144,7 @@ The bundled README standard pushes deep learning projects toward a richer, easie
 
 The skill is intentionally conservative. It tells the agent to preserve existing behavior, avoid full training runs unless requested, and migrate a repository in small reviewable steps.
 
-It is most useful for research repositories where the expected output is not just clean code, but a reproducible artifact that another researcher can install, run, evaluate, and cite.
+It is most useful for deep learning repositories where the expected output is runnable, maintainable code first. Public release documentation is optional unless the project is a paper/model release or the user explicitly asks for it.
 
 The standards were distilled from a representative sample of high-impact deep learning repositories and official project hygiene references, including Transformers, Diffusers, MMDetection, Detectron2, Segment Anything, timm, Ultralytics, nnU-Net, MONAI, PyTorch Lightning, TorchVision, CLIP, PEP 8, PEP 257, GitHub README/CITATION guidance, Ruff, pytest, and Python packaging guidance.
 
@@ -158,7 +158,7 @@ The bundled audit script can be run directly:
 python skills/beautiful-repo/scripts/audit_dl_repo.py /path/to/deep-learning-repo
 ```
 
-The script checks for common release-readiness signals such as README, license, citation metadata, configs, entry points, tests, docs, CI, public/module docstrings, naming consistency, and artifact ignore rules.
+The script checks common core-readiness signals such as README, license, configs, entry points, tests, CI, public/module docstrings, naming consistency, and artifact ignore rules. Docs, citation metadata, and rich README polish are reported as optional release signals.
 
 The output is a starting checklist, not a substitute for reading the repository.
 

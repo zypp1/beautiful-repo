@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import importlib.util
+import io
 import tempfile
 import unittest
+from contextlib import redirect_stdout
 from pathlib import Path
 
 
@@ -275,6 +277,38 @@ def TestForward():
         code = module.audit(Path("__definitely_missing_repo__"))
 
         self.assertEqual(code, 2)
+
+    def test_audit_treats_docs_and_citation_as_optional(self) -> None:
+        module = load_module()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "README.md").write_text(
+                "# Project\n\n## Quickstart\nrun\n\n## Installation\ninstall\n\n"
+                "## Data\ndata\n\n## Training\ntrain\n",
+                encoding="utf-8",
+            )
+            (root / "LICENSE").write_text("MIT\n", encoding="utf-8")
+            (root / "pyproject.toml").write_text("[project]\nname='x'\n", encoding="utf-8")
+            (root / ".gitignore").write_text("data/\noutputs/\n", encoding="utf-8")
+            (root / "src").mkdir()
+            (root / "scripts").mkdir()
+            (root / "tests").mkdir()
+            (root / "configs").mkdir()
+            (root / ".github" / "workflows").mkdir(parents=True)
+            (root / ".github" / "workflows" / "ci.yml").write_text("name: ci\n", encoding="utf-8")
+            (root / "requirements.txt").write_text("torch\n", encoding="utf-8")
+            (root / "scripts" / "train.py").write_text('"""Train entrypoint."""\n', encoding="utf-8")
+            (root / "tests" / "test_imports.py").write_text("def test_ok():\n    assert True\n", encoding="utf-8")
+
+            buffer = io.StringIO()
+            with redirect_stdout(buffer):
+                module.audit(root)
+            output = buffer.getvalue()
+
+        self.assertNotIn("MISSING: docs", output)
+        self.assertNotIn("MISSING: citation", output)
+        self.assertIn("no: docs directory", output)
+        self.assertIn("no: citation metadata", output)
 
 
 if __name__ == "__main__":
